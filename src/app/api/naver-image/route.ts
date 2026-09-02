@@ -50,8 +50,7 @@ export async function GET(req: NextRequest) {
     return new NextResponse(buffer, {
       headers: {
         "Content-Type": contentType,
-        "Cache-Control": "public, max-age=86400",
-        Vary: "url",
+        "Cache-Control": "no-store",
       },
     });
   } catch (error) {
