@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// 이 라우트는 요청마다 다른 이미지(url 쿼리)를 내려줘야 하므로,
+// 배포 환경에서 경로 단위로 잘못 캐싱되지 않도록 항상 동적으로 실행합니다.
+export const dynamic = "force-dynamic";
+
 // 네이버 블로그 이미지는 외부 사이트에서 직접 불러오면 핫링크 방지로
 // 차단되는 경우가 많습니다. 이 라우트가 서버에서 대신 이미지를 가져와
 // 전달해주면(프록시), 우리 사이트에서 정상적으로 표시할 수 있습니다.
@@ -47,6 +51,7 @@ export async function GET(req: NextRequest) {
       headers: {
         "Content-Type": contentType,
         "Cache-Control": "public, max-age=86400",
+        Vary: "url",
       },
     });
   } catch (error) {
