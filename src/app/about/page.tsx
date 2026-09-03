@@ -71,7 +71,7 @@ export default function AboutPage() {
           <Reveal delay={150}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/atamindmap.png"
+              src="/images/portfolio-process.png"
               alt="포트폴리오 프로세스 마인드맵"
               className="w-full rounded-lg"
             />
@@ -91,7 +91,7 @@ export default function AboutPage() {
             </h2>
           </Reveal>
 
-          <div className="mt-12 flex items-center justify-center gap-x-4 sm:gap-x-8 md:mt-16 md:gap-x-12">
+          <div className="mt-12 flex flex-col items-center justify-center gap-y-10 sm:flex-row sm:gap-x-8 sm:gap-y-0 md:mt-16 md:gap-x-12">
             {VALUES.map((v, i) => (
               <ValueDiamond
                 key={v.title}

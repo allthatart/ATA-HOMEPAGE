@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SideMenu } from "@/components/SideMenu";
+import { StickyCTABar } from "@/components/StickyCTABar";
 import { CustomCursor } from "@/components/CustomCursor";
 import { Onboarding } from "@/components/Onboarding";
 import { AnnouncementPopup } from "@/components/AnnouncementPopup";
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Onboarding />
         <AnnouncementPopup />
         <Header />
+        <StickyCTABar />
         <main className="flex-1">{children}</main>
         <Footer />
         <SideMenu />

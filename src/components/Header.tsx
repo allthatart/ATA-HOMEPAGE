@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +28,20 @@ export function Header() {
   // /about 진입 시 히어로가 처음부터 보이는 상태이므로, 깜빡임 없이
   // 곧바로 반전 상태로 시작합니다.
   const [inverted, setInverted] = useState(pathname === "/about");
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // 페이지 이동 시 모바일 메뉴 자동으로 닫기
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // 모바일 메뉴 열려있을 때 배경 스크롤 막기
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
   useEffect(() => {
     // 경로가 바뀔 때마다(메뉴 클릭으로 이동한 경우 포함) 다시 확인합니다.
@@ -55,14 +70,14 @@ export function Header() {
           : "border-b border-brand-line bg-brand-paper/90 backdrop-blur"
       )}
     >
-      <div className="flex h-28 w-full items-center justify-between px-5 md:px-10">
+      <div className="flex h-20 w-full items-center justify-between gap-2 px-5 md:h-28 md:px-10">
         <Link
           href="/"
           className={cn(
-            "group flex items-center gap-2 font-serif font-bold tracking-tight transition-colors duration-300",
+            "group flex min-w-0 items-center gap-1.5 font-serif font-bold tracking-tight transition-colors duration-300 md:gap-2",
             inverted ? "text-white" : "text-brand-ink"
           )}
-          style={{ fontSize: "33px", letterSpacing: "-0.01em" }}
+          style={{ letterSpacing: "-0.01em" }}
         >
           {/* 로고 이미지: public/images/logo.png 파일을 넣으면 자동으로 표시됩니다.
               이미지가 없으면 아래 텍스트 로고가 대신 보여요. */}
@@ -71,10 +86,10 @@ export function Header() {
             alt="ALL THAT ART 로고"
             width={44}
             height={44}
-            className="h-11 w-auto"
+            className="h-8 w-auto shrink-0 md:h-11"
             priority
           />
-          <span className="relative inline-block whitespace-nowrap">
+          <span className="relative inline-block whitespace-nowrap text-lg sm:text-xl md:text-[33px]">
             <span className="relative z-0">ALL THAT ART</span>
             <span
               aria-hidden="true"
@@ -145,13 +160,86 @@ export function Header() {
           asChild
           size="lg"
           className={cn(
-            "transition-colors duration-300",
+            "hidden shrink-0 transition-colors duration-300 md:inline-flex md:h-11 md:px-8 md:text-base",
             inverted &&
               "border border-white bg-transparent text-white hover:bg-white hover:text-brand-ink"
           )}
         >
           <Link href="/consultation">상담예약</Link>
         </Button>
+
+        {/* 모바일 전용 햄버거 버튼 */}
+        <button
+          onClick={() => setMobileOpen(true)}
+          aria-label="메뉴 열기"
+          className={cn(
+            "flex size-10 shrink-0 items-center justify-center rounded-full transition-colors md:hidden",
+            inverted ? "text-white" : "text-brand-ink"
+          )}
+        >
+          <Menu className="size-6" />
+        </button>
+      </div>
+
+      {/* 모바일 전용 슬라이드 메뉴 */}
+      <div
+        className={cn(
+          "fixed inset-0 z-[60] transition-opacity duration-300 md:hidden",
+          mobileOpen
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
+        )}
+      >
+        <div
+          className="absolute inset-0 bg-brand-ink/60 backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)}
+        />
+        <div
+          className={cn(
+            "absolute right-0 top-0 flex h-full w-full max-w-[320px] flex-col bg-brand-paper shadow-2xl transition-transform duration-300 ease-out",
+            mobileOpen ? "translate-x-0" : "translate-x-full"
+          )}
+        >
+          <button
+            onClick={() => setMobileOpen(false)}
+            aria-label="메뉴 닫기"
+            className="absolute right-6 top-6 text-brand-ink/50 transition-colors hover:text-brand-accent"
+          >
+            <X className="size-6" />
+          </button>
+
+          <nav className="flex h-full flex-col justify-center gap-1 overflow-y-auto px-10 py-20">
+            <Link
+              href="/about"
+              className="border-b border-brand-line py-3.5 font-serif text-xl font-bold text-brand-ink transition-colors hover:text-brand-accent"
+            >
+              소개
+            </Link>
+            <Link
+              href="/curriculum"
+              className="border-b border-brand-line py-3.5 font-serif text-xl font-bold text-brand-ink transition-colors hover:text-brand-accent"
+            >
+              커리큘럼
+            </Link>
+            {NAV_ITEMS.filter((item) => item.href !== "/about").map(
+              (item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="border-b border-brand-line py-3.5 font-serif text-xl font-bold text-brand-ink transition-colors hover:text-brand-accent"
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
+            <Link
+              href="/consultation"
+              className="mt-6 rounded-full bg-brand-accent px-6 py-3.5 text-center font-semibold text-white transition-colors hover:bg-brand-accent-deep"
+            >
+              상담예약
+            </Link>
+          </nav>
+        </div>
       </div>
     </header>
   );

@@ -37,12 +37,12 @@ export function SideMenu() {
 
   return (
     <>
-      {/* 화면 옆에 붙어있는 고정 탭 */}
+      {/* 화면 옆에 붙어있는 고정 탭 (데스크탑 전용, 모바일은 헤더 햄버거 버튼 사용) */}
       <button
         onClick={() => setOpen(true)}
         aria-label="메뉴 열기"
         className={cn(
-          "fixed right-0 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center gap-3 rounded-l-full bg-brand-ink px-2.5 py-7 text-white shadow-lg transition-all hover:-translate-x-1 hover:bg-brand-accent-deep",
+          "fixed right-0 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-3 rounded-l-full bg-brand-ink px-2.5 py-7 text-white shadow-lg transition-all hover:-translate-x-1 hover:bg-brand-accent-deep md:flex",
           open && "pointer-events-none opacity-0"
         )}
       >

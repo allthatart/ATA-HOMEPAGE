@@ -45,16 +45,16 @@ export function ValueDiamond({
       ref={ref}
       className="relative flex shrink-0 items-center justify-center"
       style={{
-        width: "clamp(100px, 24vw, 320px)",
-        height: "clamp(100px, 24vw, 320px)",
+        width: "clamp(180px, 45vw, 320px)",
+        height: "clamp(180px, 45vw, 320px)",
       }}
     >
       {/* 4개 조각이 모여 완성되는 사각형(전체를 45도 회전시켜 마름모로) */}
       <div
         className="grid grid-cols-2 grid-rows-2 overflow-hidden shadow-2xl"
         style={{
-          width: "clamp(70px, 16vw, 220px)",
-          height: "clamp(70px, 16vw, 220px)",
+          width: "clamp(130px, 30vw, 220px)",
+          height: "clamp(130px, 30vw, 220px)",
           transform: "rotate(45deg)",
         }}
       >
@@ -78,16 +78,16 @@ export function ValueDiamond({
       <div
         className="absolute flex flex-col items-center justify-center text-center transition-all duration-500 ease-out"
         style={{
-          width: "clamp(56px, 12vw, 170px)",
+          width: "clamp(90px, 20vw, 170px)",
           opacity: visible ? 1 : 0,
           transform: visible ? "scale(1)" : "scale(0.85)",
           transitionDelay: visible ? `${baseDelay + 430}ms` : "0ms",
         }}
       >
-        <h3 className="font-serif text-base font-bold text-white md:text-lg">
+        <h3 className="font-serif text-sm font-bold text-white md:text-lg">
           {title}
         </h3>
-        <p className="mt-2 text-[11px] leading-snug text-white/90 md:text-xs">
+        <p className="mt-2 text-[10px] leading-snug text-white/90 md:text-xs">
           {desc}
         </p>
       </div>
