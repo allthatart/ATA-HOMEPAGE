@@ -62,14 +62,15 @@ export function Header() {
   }, [pathname]);
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-[55] transition-colors duration-300",
-        inverted
-          ? "border-b border-transparent bg-white/15 backdrop-blur-md"
-          : "border-b border-brand-line bg-brand-paper/90 backdrop-blur"
-      )}
-    >
+    <>
+      <header
+        className={cn(
+          "sticky top-0 z-[55] transition-colors duration-300",
+          inverted
+            ? "border-b border-transparent bg-white/15 backdrop-blur-md"
+            : "border-b border-brand-line bg-brand-paper/90 backdrop-blur"
+        )}
+      >
       <div className="flex h-20 w-full items-center justify-between gap-2 px-5 md:h-28 md:px-10">
         <Link
           href="/"
@@ -179,9 +180,10 @@ export function Header() {
         >
           <Menu className="size-6" />
         </button>
-      </div>
+        </div>
+      </header>
 
-      {/* 모바일 전용 슬라이드 메뉴 */}
+      {/* 모바일 전용 슬라이드 메뉴 (header의 backdrop-blur 영향을 받지 않도록 header 밖으로 분리) */}
       <div
         className={cn(
           "fixed inset-0 z-[60] transition-opacity duration-300 md:hidden",
@@ -241,6 +243,6 @@ export function Header() {
           </nav>
         </div>
       </div>
-    </header>
+    </>
   );
 }
