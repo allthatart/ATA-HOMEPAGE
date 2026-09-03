@@ -61,12 +61,13 @@ export default function CurriculumPage() {
 
       {/* Intro → Diagram → Subjects → Method : 그리스 철학 배경 사진 위에 통합 */}
       <section className="relative w-full overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center bg-brand-ink">
-          <span className="text-sm text-white/15">
-            고대 그리스 철학자 조각상 사진 자리
-          </span>
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/curriculum-hero.jpg"
+          alt="고대 그리스 철학자 조각상"
+          className="absolute inset-0 h-full w-full object-cover grayscale"
+        />
+        <div className="absolute inset-0 bg-black/40" />
 
         <div className="relative z-10 px-5 py-12 md:px-10 md:py-20">
           {/* Intro */}

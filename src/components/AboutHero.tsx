@@ -36,11 +36,14 @@ export function AboutHero() {
     >
       <div
         ref={bgRef}
-        className="absolute inset-x-0 -top-[15%] flex h-[130%] w-full items-center justify-center bg-brand-ink will-change-transform"
+        className="absolute inset-x-0 -top-[15%] h-[130%] w-full will-change-transform"
       >
-        <span className="text-sm text-white/20">
-          학원 수업 공간 사진 자리
-        </span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/about-hero.jpg"
+          alt="올댓아트 수업 공간"
+          className="h-full w-full object-cover grayscale"
+        />
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/50" />
 
