@@ -20,8 +20,8 @@ export function StickyCTABar() {
   return (
     <div
       className={cn(
-        "fixed inset-x-0 z-40 border-b border-brand-line bg-brand-paper/95 shadow-md backdrop-blur transition-all duration-300",
-        "top-20 md:top-28",
+        "fixed inset-x-0 z-40 border-b border-brand-line bg-brand-paper/95 shadow-md backdrop-blur transition-all duration-300 md:hidden",
+        "top-20",
         visible
           ? "translate-y-0 opacity-100"
           : "pointer-events-none -translate-y-full opacity-0"
