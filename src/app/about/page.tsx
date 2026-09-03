@@ -41,7 +41,7 @@ export default function AboutPage() {
       <AboutHero />
 
       {/* Intro statement */}
-      <section className="w-full px-5 pt-14 pb-20 md:px-64 md:pt-16">
+      <section className="w-full px-5 pt-8 pb-12 md:px-64 md:pt-16">
         <div className="grid gap-12 md:grid-cols-[1.1fr_1fr] md:items-center">
           <Reveal className="max-w-xl">
             <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
@@ -80,7 +80,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values — 다홍색 마름모, 퍼즐처럼 조립 */}
-      <section className="w-full bg-brand-canvas px-5 py-20 md:px-10 md:py-24">
+      <section className="w-full bg-brand-canvas px-5 py-12 md:px-10 md:py-24">
         <div className="mx-auto max-w-5xl">
           <Reveal>
             <p className="text-center text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
@@ -105,7 +105,7 @@ export default function AboutPage() {
       </section>
 
       {/* Achievement */}
-      <section className="w-full border-y border-brand-line px-5 py-20 md:px-10">
+      <section className="w-full border-y border-brand-line px-5 py-12 md:px-10 md:py-20">
         <div className="mx-auto max-w-5xl">
           <Reveal>
             <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
@@ -133,7 +133,7 @@ export default function AboutPage() {
       </section>
 
       {/* History — 블랙, 스크롤 순차 등장 */}
-      <section className="bg-brand-ink py-24">
+      <section className="bg-brand-ink py-14 md:py-24">
         <div className="w-full px-5 md:px-10">
           <div className="mx-auto max-w-3xl">
             <Reveal variant="pop">
@@ -161,7 +161,7 @@ export default function AboutPage() {
       </section>
 
       {/* Student artwork marquee */}
-      <section className="w-full bg-brand-canvas py-20">
+      <section className="w-full bg-brand-canvas py-12 md:py-20">
         <Reveal className="mb-10 px-5 md:px-10">
           <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
             Student Works

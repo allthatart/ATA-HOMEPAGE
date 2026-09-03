@@ -73,13 +73,14 @@ export default function ConsultationPage() {
               </p>
 
               <Button size="lg" className="mt-6 w-full sm:w-auto" asChild>
-                <a href="#" aria-disabled="true">
+                <a
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSejiDVG6zN3pnQQqneWR4lefiQqF7Lgaakys9fI6rRG0mARnw/viewform"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   상담 신청서 작성하기
                 </a>
               </Button>
-              <p className="mt-3 text-xs text-brand-ink/40">
-                * 구글폼 링크를 만드신 후 위 버튼의 href에 연결해주세요
-              </p>
 
               <div className="mt-8 border-t border-brand-line pt-6 text-sm text-brand-ink/70">
                 <p>전화 상담도 가능합니다</p>

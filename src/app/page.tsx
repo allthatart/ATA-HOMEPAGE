@@ -11,8 +11,8 @@ export const revalidate = 1800;
 
 // RSS를 못 가져왔을 때(연동 전 등) 보여줄 예시 썸네일
 const FALLBACK_THUMBS: SlideImage[] = Array.from({ length: 6 }, (_, i) => ({
-  src: `https://picsum.photos/seed/allthatart-content-${i + 1}/640/480`,
-  alt: `콘텐츠 썸네일 ${i + 1}`,
+  src: "",
+  alt: `콘텐츠 썸네일 ${i + 1} 자리`,
 }));
 
 const CURRICULUM_PREVIEW = [
@@ -55,7 +55,7 @@ export default async function Home() {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="relative z-10 w-full px-5 pt-20 pb-24 md:px-10 md:pt-28 md:pb-32">
+        <div className="relative z-10 w-full px-5 pt-12 pb-14 md:px-10 md:pt-28 md:pb-32">
           <div className="mx-auto max-w-3xl">
             <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
               All That Art
@@ -103,7 +103,7 @@ export default async function Home() {
       </section>
 
       {/* About preview */}
-      <section className="w-full px-5 md:px-10 py-24">
+      <section className="w-full px-5 py-14 md:px-10 md:py-24">
         <div className="grid gap-12 md:grid-cols-2 md:items-center">
           <Reveal>
             <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
@@ -131,7 +131,7 @@ export default async function Home() {
       </section>
 
       {/* Curriculum preview */}
-      <section className="bg-brand-canvas py-24">
+      <section className="bg-brand-canvas py-14 md:py-24">
         <div className="w-full px-5 md:px-10">
           <Reveal>
             <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
@@ -163,7 +163,7 @@ export default async function Home() {
 
       {/* CTA band */}
       <section className="bg-brand-ink">
-        <Reveal className="flex w-full flex-col items-start justify-between gap-6 px-5 py-16 md:flex-row md:items-center md:px-10">
+        <Reveal className="flex w-full flex-col items-start justify-between gap-6 px-5 py-10 md:flex-row md:items-center md:px-10">
           <h2 className="font-serif text-2xl font-bold text-white md:text-3xl">
             지금, 첫 상담을 예약해보세요.
           </h2>
@@ -178,7 +178,7 @@ export default async function Home() {
       </section>
 
       {/* Content preview slider */}
-      <section className="w-full bg-brand-canvas py-20">
+      <section className="w-full bg-brand-canvas py-12 md:py-20">
         <Reveal className="px-5 md:px-10">
           <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
             Contents

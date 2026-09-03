@@ -42,7 +42,7 @@ export default async function CurriculumTrackLandingPage({
           className="absolute inset-0 h-full w-full object-cover"
         />
 
-        <div className="relative z-10 px-5 py-24 md:px-10 md:py-32">
+        <div className="relative z-10 px-5 py-14 md:px-10 md:py-32">
           <Reveal className="mx-auto max-w-3xl text-center">
             <p className="text-sm font-semibold tracking-[0.3em] text-brand-accent-deep uppercase">
               Curriculum · {track.heroTag}
@@ -65,7 +65,7 @@ export default async function CurriculumTrackLandingPage({
       </section>
 
       {/* CLASS */}
-      <section className="w-full px-5 py-20 md:px-10">
+      <section className="w-full px-5 py-12 md:px-10 md:py-20">
         <div className="mx-auto max-w-5xl">
           <Reveal className="text-center">
             <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
@@ -108,7 +108,7 @@ export default async function CurriculumTrackLandingPage({
       </section>
 
       {/* SUBJECT */}
-      <section className="w-full bg-brand-ink px-5 py-20 md:px-10">
+      <section className="w-full bg-brand-ink px-5 py-12 md:px-10 md:py-20">
         <div className="mx-auto max-w-4xl">
           <Reveal className="text-center">
             <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent uppercase">
@@ -142,7 +142,7 @@ export default async function CurriculumTrackLandingPage({
       </section>
 
       {/* WORKBOOK / PORTFOLIO */}
-      <section className="w-full bg-brand-canvas px-5 py-24 md:px-10">
+      <section className="w-full bg-brand-canvas px-5 py-14 md:px-10 md:py-24">
         <Reveal className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
             Workbook · Portfolio
@@ -160,7 +160,7 @@ export default async function CurriculumTrackLandingPage({
       </section>
 
       {/* RESULT */}
-      <section className="w-full px-5 py-24 md:px-10">
+      <section className="w-full px-5 py-14 md:px-10 md:py-24">
         <Reveal className="mx-auto max-w-3xl text-center">
           <p className="whitespace-pre-line font-serif text-2xl font-bold leading-snug text-brand-ink md:text-3xl">
             {track.resultHeadline}

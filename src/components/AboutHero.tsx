@@ -32,7 +32,7 @@ export function AboutHero() {
   return (
     <section
       data-header-invert-zone="true"
-      className="relative -mt-20 h-screen w-full overflow-hidden bg-brand-ink md:-mt-28"
+      className="relative -mt-16 h-screen w-full overflow-hidden bg-brand-ink md:-mt-28"
     >
       <div
         ref={bgRef}

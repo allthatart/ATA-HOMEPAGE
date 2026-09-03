@@ -43,13 +43,13 @@ export function ContentGrid({ posts }: { posts: ContentPost[] }) {
   return (
     <div className="mx-auto w-full px-5 md:w-[70%] md:px-0">
       {/* 카테고리 필터 */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2">
         {FILTERS.map((f) => (
           <button key={f} onClick={() => handleFilter(f)}>
             <Badge
               variant={filter === f ? "default" : "outline"}
               className={cn(
-                "cursor-pointer px-4 py-1.5 text-sm",
+                "cursor-pointer px-3 py-1 text-xs sm:px-4 sm:py-1.5 sm:text-sm",
                 filter === f
                   ? "bg-brand-accent text-white"
                   : "border-brand-line text-brand-ink/60 hover:text-brand-accent-deep"
@@ -62,7 +62,7 @@ export function ContentGrid({ posts }: { posts: ContentPost[] }) {
       </div>
 
       {/* 카드 그리드 */}
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-6 lg:grid-cols-3">
         {paginated.map((post) => {
           const inner = (
             <>
@@ -75,22 +75,22 @@ export function ContentGrid({ posts }: { posts: ContentPost[] }) {
                     className="h-full w-full object-cover transition-transform group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-xs text-brand-ink/30">
+                  <div className="flex h-full w-full items-center justify-center text-[10px] text-brand-ink/30 sm:text-xs">
                     썸네일 이미지
                   </div>
                 )}
               </div>
-              <div className="p-5">
+              <div className="p-2.5 sm:p-5">
                 <Badge
                   variant="outline"
-                  className="border-brand-accent/40 text-brand-accent-deep"
+                  className="border-brand-accent/40 px-2 py-0.5 text-[10px] text-brand-accent-deep sm:px-2.5 sm:text-xs"
                 >
                   {post.category}
                 </Badge>
-                <h2 className="mt-3 font-serif text-lg font-bold leading-snug text-brand-ink transition-colors group-hover:text-brand-accent-deep">
+                <h2 className="mt-2 font-serif text-xs font-bold leading-snug text-brand-ink transition-colors group-hover:text-brand-accent-deep sm:mt-3 sm:text-lg">
                   {post.title}
                 </h2>
-                <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-brand-ink/60">
+                <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-brand-ink/60 sm:mt-2 sm:text-sm">
                   {post.description}
                 </p>
               </div>

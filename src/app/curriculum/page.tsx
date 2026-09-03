@@ -18,7 +18,7 @@ export default function CurriculumPage() {
   return (
     <>
       {/* Hero — 파스텔 보라 배경 */}
-      <section className="w-full bg-[linear-gradient(to_bottom,#FFEEE6_0%,#FFEEE6_100%,#363636_100%)] px-5 pt-24 pb-16 md:px-10 md:pt-24 md:pb-30">
+      <section className="w-full bg-[linear-gradient(to_bottom,#FFEEE6_0%,#FFEEE6_100%,#363636_100%)] px-5 pt-14 pb-10 md:px-10 md:pt-24 md:pb-30">
         <Reveal className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
             Curriculum
@@ -61,17 +61,14 @@ export default function CurriculumPage() {
 
       {/* Intro → Diagram → Subjects → Method : 그리스 철학 배경 사진 위에 통합 */}
       <section className="relative w-full overflow-hidden">
-        <div className="absolute inset-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://picsum.photos/seed/allthatart-greek-philosophy/1920/2400"
-            alt="고대 그리스 조각상"
-            className="h-full w-full object-cover grayscale"
-          />
-          <div className="absolute inset-0 bg-black/78" />
+        <div className="absolute inset-0 flex items-center justify-center bg-brand-ink">
+          <span className="text-sm text-white/15">
+            고대 그리스 철학자 조각상 사진 자리
+          </span>
+          <div className="absolute inset-0 bg-black/40" />
         </div>
 
-        <div className="relative z-10 px-5 py-20 md:px-10">
+        <div className="relative z-10 px-5 py-12 md:px-10 md:py-20">
           {/* Intro */}
           <Reveal className="mx-auto max-w-4xl">
             <p className="leading-[2] text-white/100">
@@ -153,7 +150,7 @@ export default function CurriculumPage() {
       </section>
 
       {/* Programs */}
-      <section className="w-full px-5 py-20 md:px-10">
+      <section className="w-full px-5 py-12 md:px-10 md:py-20">
         <div className="mx-auto max-w-3xl">
           <Reveal>
             <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">

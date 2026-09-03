@@ -71,7 +71,7 @@ export function Header() {
             : "border-b border-brand-line bg-brand-paper/90 backdrop-blur"
         )}
       >
-      <div className="flex h-20 w-full items-center justify-between gap-2 px-5 md:h-28 md:px-10">
+      <div className="flex h-16 w-full items-center justify-between gap-2 px-5 md:h-28 md:px-10">
         <Link
           href="/"
           className={cn(
