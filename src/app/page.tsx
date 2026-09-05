@@ -5,6 +5,7 @@ import { BrushStroke } from "@/components/BrushStroke";
 import { HeroSlider } from "@/components/HeroSlider";
 import { Reveal } from "@/components/Reveal";
 import { ContentThumbSlider, type SlideImage } from "@/components/ContentThumbSlider";
+import { SocialFloatingButtons } from "@/components/SocialFloatingButtons";
 import { getNaverBlogPosts } from "@/lib/naver-rss";
 
 export const revalidate = 1800;
@@ -198,6 +199,8 @@ export default async function Home() {
           </Button>
         </div>
       </section>
+
+      <SocialFloatingButtons />
     </>
   );
 }
