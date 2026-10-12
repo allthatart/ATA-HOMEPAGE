@@ -142,12 +142,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track {
+  .marquee-track,
+  .student-marquee-track {
     animation: none;
   }
 }
 
-/* 학생 작품 마퀴: 속도 변화 없이 일정하게 흐르는 무한 슬라이드 */
+/* 메인페이지 콘텐츠 슬라이더: 배열을 두 번 반복한 띠를 절반만큼 이동 */
 @keyframes marquee-scroll {
   from {
     transform: translateX(0);
@@ -161,68 +162,35 @@
   animation: marquee-scroll 32s linear infinite;
 }
 
+/* 학생 작품 마퀴: 같은 띠 두 개를 나란히 놓고 각자 자기 길이(100%)만큼 이동 */
+@keyframes student-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.student-marquee-track {
+  animation: student-marquee-scroll 176s linear infinite;
+}
+
+@media (hover: hover) {
+  .marquee-wrap:hover .student-marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+.marquee-wrap.is-touching .student-marquee-track {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal-el {
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
-  }
-}
-
-/* Custom cursor */
-.custom-cursor-active,
-.custom-cursor-active * {
-  cursor: none !important;
-}
-
-.cursor-dot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 6px;
-  height: 6px;
-  margin-left: -3px;
-  margin-top: -3px;
-  border-radius: 9999px;
-  background: var(--brand-accent);
-  pointer-events: none;
-  z-index: 9999;
-}
-
-.cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 34px;
-  height: 34px;
-  margin-left: -17px;
-  margin-top: -17px;
-  border-radius: 9999px;
-  border: 1.5px solid var(--brand-ink);
-  pointer-events: none;
-  z-index: 9998;
-  transition:
-    width 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    margin 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.25s ease,
-    border-color 0.25s ease;
-}
-
-.cursor-ring--hover {
-  width: 64px;
-  height: 64px;
-  margin-left: -32px;
-  margin-top: -32px;
-  background: var(--brand-accent);
-  border-color: var(--brand-accent);
-  opacity: 0.18;
-}
-
-@media (pointer: coarse) {
-  .cursor-dot,
-  .cursor-ring {
-    display: none;
   }
 }

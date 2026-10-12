@@ -1,8 +1,9 @@
-import { BrushStroke } from "@/components/BrushStroke";
 import { Reveal } from "@/components/Reveal";
 import { ContentGrid, type ContentPost } from "@/components/ContentGrid";
 import { getNaverBlogPosts } from "@/lib/naver-rss";
 import { classifyPost } from "@/lib/classify-post";
+import { jejuGothic } from "@/fonts";
+import { T } from "@/components/T";
 
 // 이 페이지는 매 요청 시 최신 RSS를 다시 확인합니다 (30분 캐시).
 export const revalidate = 1800;
@@ -61,25 +62,35 @@ export default async function BlogPage() {
           <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
             Contents
           </p>
-          <div className="relative mt-4 max-w-2xl">
-            <BrushStroke className="absolute -left-3 top-2 h-12 w-64 opacity-90" />
-            <h1 className="relative font-serif text-4xl font-bold leading-tight text-brand-ink md:text-5xl">
-              올댓아트 콘텐츠
-            </h1>
-          </div>
+          <h1
+            className={`${jejuGothic.className} mt-4 max-w-2xl text-4xl leading-[1.15] text-brand-ink md:text-6xl`}
+          >
+            <T ko="올댓아트 콘텐츠" en="All That Art Contents" />
+          </h1>
           <p className="mt-8 max-w-2xl leading-relaxed text-brand-ink/70">
-            입시정보, 유학정보, 합격후기까지 — 올댓아트가 전하는 이야기입니다.
+            <T
+              ko="입시정보, 유학정보, 합격후기까지 — 올댓아트가 전하는 이야기입니다."
+              en="Admissions info, study-abroad tips, and acceptance stories — brought to you by All That Art."
+            />
           </p>
 
           {hasLivePosts ? (
             <p className="mt-2 text-xs text-brand-ink/40">
-              네이버 블로그와 자동으로 연동되어 있어요. 블로그에 새 글을
-              올리시면 이 페이지에도 자동으로 반영됩니다.
+              <T
+                ko="네이버 블로그와 자동으로 연동되어 있어요. 블로그에 새 글을
+              올리시면 이 페이지에도 자동으로 반영됩니다."
+                en="Automatically synced with our Naver blog. New posts there
+              appear here automatically."
+              />
             </p>
           ) : (
             <p className="mt-2 text-xs text-brand-ink/40">
-              * 지금은 예시 콘텐츠입니다. 네이버 블로그 RSS 연동이 설정되면
-              자동으로 실제 글이 표시돼요.
+              <T
+                ko="* 지금은 예시 콘텐츠입니다. 네이버 블로그 RSS 연동이 설정되면
+              자동으로 실제 글이 표시돼요."
+                en="* This is sample content for now. Once the Naver blog RSS
+              is connected, real posts will show automatically."
+              />
             </p>
           )}
         </div>

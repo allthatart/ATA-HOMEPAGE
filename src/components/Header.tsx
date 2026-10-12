@@ -7,18 +7,22 @@ import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { gyeonGothic } from "@/fonts";
+import { useLang } from "@/lib/i18n";
 
 const NAV_ITEMS = [
-  { href: "/about", label: "소개" },
-  { href: "/results", label: "합격결과" },
-  { href: "/blog", label: "콘텐츠" },
-  { href: "/location", label: "오시는 길" },
+  { href: "/about", label: "소개", labelEn: "About" },
+  { href: "/results", label: "합격결과", labelEn: "Results" },
+  { href: "/blog", label: "콘텐츠", labelEn: "Contents" },
+  { href: "/location", label: "오시는 길", labelEn: "Location" },
 ];
 
 const CURRICULUM_SUB_ITEMS = [
-  { href: "/curriculum/undergraduate", label: "신입학준비" },
-  { href: "/curriculum/transfer", label: "편입학준비" },
-  { href: "/curriculum/graduate", label: "대학원준비" },
+  { href: "/curriculum/undergraduate/prep", label: "예비반", labelEn: "Prep" },
+  { href: "/curriculum/undergraduate/intensive", label: "특강반", labelEn: "Intensive" },
+  { href: "/curriculum/undergraduate/regular", label: "신입학", labelEn: "New Admission" },
+  { href: "/curriculum/transfer/regular", label: "편입학", labelEn: "Transfer" },
+  { href: "/curriculum/graduate/regular", label: "대학원", labelEn: "Graduate" },
 ];
 
 export function Header() {
@@ -29,6 +33,7 @@ export function Header() {
   // 곧바로 반전 상태로 시작합니다.
   const [inverted, setInverted] = useState(pathname === "/about");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { lang, toggleLang } = useLang();
 
   // 페이지 이동 시 모바일 메뉴 자동으로 닫기
   useEffect(() => {
@@ -75,19 +80,23 @@ export function Header() {
         <Link
           href="/"
           className={cn(
-            "group flex min-w-0 items-center gap-1.5 font-serif font-bold tracking-tight transition-colors duration-300 md:gap-2",
+            "group flex min-w-0 items-center gap-1.5 tracking-tight transition-colors duration-300 md:gap-2",
+            gyeonGothic.className,
             inverted ? "text-white" : "text-brand-ink"
           )}
-          style={{ letterSpacing: "-0.01em" }}
+          style={{ letterSpacing: "0.08em" }}
         >
           {/* 로고 이미지: public/images/logo.png 파일을 넣으면 자동으로 표시됩니다.
               이미지가 없으면 아래 텍스트 로고가 대신 보여요. */}
           <Image
             src="/images/logo.png"
             alt="ALL THAT ART 로고"
-            width={44}
-            height={44}
-            className="h-8 w-auto shrink-0 md:h-11"
+            width={1472}
+            height={1369}
+            className={cn(
+              "h-8 w-auto shrink-0 transition-all duration-300 md:h-11",
+              inverted && "brightness-0 invert"
+            )}
             priority
           />
           <span className="relative inline-block whitespace-nowrap text-lg sm:text-xl md:text-[33px]">
@@ -111,7 +120,7 @@ export function Header() {
                 : "text-brand-ink/80 hover:text-brand-accent"
             )}
           >
-            소개
+            {lang === "en" ? "About" : "소개"}
           </Link>
 
           {/* 커리큘럼: 호버 시 서브메뉴(로컬 네비게이션) 노출 */}
@@ -125,7 +134,7 @@ export function Header() {
                   : "text-brand-ink/80 hover:text-brand-accent"
               )}
             >
-              커리큘럼
+              {lang === "en" ? "Curriculum" : "커리큘럼"}
             </Link>
 
             <div className="invisible absolute left-1/2 top-full w-44 -translate-x-1/2 translate-y-[-8px] rounded-lg border border-brand-line bg-brand-paper py-2 opacity-0 shadow-lg transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
@@ -135,7 +144,7 @@ export function Header() {
                   href={item.href}
                   className="block px-4 py-2.5 text-sm text-brand-ink/70 transition-colors hover:bg-brand-canvas hover:text-brand-accent-deep"
                 >
-                  {item.label}
+                  {lang === "en" ? item.labelEn : item.label}
                 </Link>
               ))}
             </div>
@@ -152,21 +161,38 @@ export function Header() {
                   : "text-brand-ink/80 hover:text-brand-accent"
               )}
             >
-              {item.label}
+              {lang === "en" ? item.labelEn : item.label}
             </Link>
           ))}
+
+          {/* 언어 전환 버튼: 오시는 길(Location) 바로 옆 */}
+          <button
+            type="button"
+            onClick={toggleLang}
+            aria-label="언어 전환"
+            className={cn(
+              "rounded-full border px-3 py-1.5 text-sm font-semibold transition-colors duration-300",
+              inverted
+                ? "border-white/40 text-white hover:bg-white hover:text-brand-ink"
+                : "border-brand-line text-brand-ink/80 hover:border-brand-accent hover:text-brand-accent"
+            )}
+          >
+            {lang === "en" ? "KOR" : "ENG"}
+          </button>
         </nav>
 
         <Button
           asChild
           size="lg"
           className={cn(
-            "hidden shrink-0 transition-colors duration-300 md:inline-flex md:h-11 md:px-8 md:text-base",
+            "hidden shrink-0 rounded-full bg-[#f37520] transition-colors duration-300 hover:bg-brand-accent-deep md:inline-flex md:h-11 md:px-8 md:text-base",
             inverted &&
               "border border-white bg-transparent text-white hover:bg-white hover:text-brand-ink"
           )}
         >
-          <Link href="/consultation">상담예약</Link>
+          <Link href="/consultation">
+            {lang === "en" ? "Consultation" : "상담예약"}
+          </Link>
         </Button>
 
         {/* 모바일 전용 햄버거 버튼 */}
@@ -215,14 +241,25 @@ export function Header() {
               href="/about"
               className="border-b border-brand-line py-3.5 font-serif text-xl font-bold text-brand-ink transition-colors hover:text-brand-accent"
             >
-              소개
+              {lang === "en" ? "About" : "소개"}
             </Link>
             <Link
               href="/curriculum"
-              className="border-b border-brand-line py-3.5 font-serif text-xl font-bold text-brand-ink transition-colors hover:text-brand-accent"
+              className="py-3.5 font-serif text-xl font-bold text-brand-ink transition-colors hover:text-brand-accent"
             >
-              커리큘럼
+              {lang === "en" ? "Curriculum" : "커리큘럼"}
             </Link>
+            <div className="flex flex-col border-b border-brand-line pb-2">
+              {CURRICULUM_SUB_ITEMS.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="py-1.5 pl-4 text-base text-brand-ink/70 transition-colors hover:text-brand-accent"
+                >
+                  {lang === "en" ? item.labelEn : item.label}
+                </Link>
+              ))}
+            </div>
             {NAV_ITEMS.filter((item) => item.href !== "/about").map(
               (item) => (
                 <Link
@@ -230,15 +267,24 @@ export function Header() {
                   href={item.href}
                   className="border-b border-brand-line py-3.5 font-serif text-xl font-bold text-brand-ink transition-colors hover:text-brand-accent"
                 >
-                  {item.label}
+                  {lang === "en" ? item.labelEn : item.label}
                 </Link>
               )
             )}
+
+            <button
+              type="button"
+              onClick={toggleLang}
+              className="mt-6 w-fit rounded-full border border-brand-line px-4 py-2 text-sm font-semibold text-brand-ink/80 transition-colors hover:border-brand-accent hover:text-brand-accent"
+            >
+              {lang === "en" ? "한국어로 보기" : "View in English"}
+            </button>
+
             <Link
               href="/consultation"
               className="mt-6 rounded-full bg-brand-accent px-6 py-3.5 text-center font-semibold text-white transition-colors hover:bg-brand-accent-deep"
             >
-              상담예약
+              {lang === "en" ? "Consultation" : "상담예약"}
             </Link>
           </nav>
         </div>

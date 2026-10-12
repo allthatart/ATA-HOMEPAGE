@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/lib/i18n";
 
 export function StickyCTABar() {
   const [visible, setVisible] = useState(false);
+  const { lang } = useLang();
 
   useEffect(() => {
     function onScroll() {
@@ -29,7 +31,9 @@ export function StickyCTABar() {
     >
       <div className="flex items-center justify-center gap-3 px-5 py-3">
         <Button asChild size="sm" className="md:h-10 md:px-6 md:text-base">
-          <Link href="/consultation">무료 상담 예약하기</Link>
+          <Link href="/consultation">
+            {lang === "en" ? "Free Consultation" : "무료 상담 예약하기"}
+          </Link>
         </Button>
         <Button
           asChild
@@ -37,7 +41,9 @@ export function StickyCTABar() {
           variant="outline"
           className="md:h-10 md:px-6 md:text-base"
         >
-          <Link href="/curriculum">커리큘럼 살펴보기</Link>
+          <Link href="/curriculum">
+            {lang === "en" ? "Curriculum" : "커리큘럼 살펴보기"}
+          </Link>
         </Button>
       </div>
     </div>

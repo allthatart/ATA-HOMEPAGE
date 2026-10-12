@@ -5,6 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CATEGORIES, type Category } from "@/lib/classify-post";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/lib/i18n";
+
+const FILTER_LABELS_EN: Record<string, string> = {
+  전체: "All",
+  대학정보: "University Info",
+  전공: "Majors",
+  "입시 팁": "Admissions Tips",
+  "올댓아트 활동": "ATA Activities",
+  기타: "Other",
+};
 
 export type ContentPost = {
   id: string;
@@ -21,6 +31,7 @@ const FILTERS = ["전체", ...CATEGORIES] as const;
 export function ContentGrid({ posts }: { posts: ContentPost[] }) {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("전체");
   const [page, setPage] = useState(1);
+  const { lang } = useLang();
 
   const filtered = useMemo(
     () =>
@@ -55,7 +66,7 @@ export function ContentGrid({ posts }: { posts: ContentPost[] }) {
                   : "border-brand-line text-brand-ink/60 hover:text-brand-accent-deep"
               )}
             >
-              {f}
+              {lang === "en" ? FILTER_LABELS_EN[f] ?? f : f}
             </Badge>
           </button>
         ))}
@@ -76,7 +87,7 @@ export function ContentGrid({ posts }: { posts: ContentPost[] }) {
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-[10px] text-brand-ink/30 sm:text-xs">
-                    썸네일 이미지
+                    {lang === "en" ? "Thumbnail" : "썸네일 이미지"}
                   </div>
                 )}
               </div>
@@ -85,7 +96,9 @@ export function ContentGrid({ posts }: { posts: ContentPost[] }) {
                   variant="outline"
                   className="border-brand-accent/40 px-2 py-0.5 text-[10px] text-brand-accent-deep sm:px-2.5 sm:text-xs"
                 >
-                  {post.category}
+                  {lang === "en"
+                    ? FILTER_LABELS_EN[post.category] ?? post.category
+                    : post.category}
                 </Badge>
                 <h2 className="mt-2 font-serif text-xs font-bold leading-snug text-brand-ink transition-colors group-hover:text-brand-accent-deep sm:mt-3 sm:text-lg">
                   {post.title}
@@ -120,7 +133,9 @@ export function ContentGrid({ posts }: { posts: ContentPost[] }) {
 
       {filtered.length === 0 && (
         <p className="mt-16 text-center text-sm text-brand-ink/40">
-          해당 카테고리의 콘텐츠가 아직 없어요.
+          {lang === "en"
+            ? "No content in this category yet."
+            : "해당 카테고리의 콘텐츠가 아직 없어요."}
         </p>
       )}
 

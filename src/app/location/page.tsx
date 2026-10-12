@@ -1,20 +1,27 @@
-import { BrushStroke } from "@/components/BrushStroke";
 import { Reveal } from "@/components/Reveal";
+import { jejuGothic } from "@/fonts";
+import { T } from "@/components/T";
 
 const INFO = [
   {
     label: "주소",
+    labelEn: "Address",
     value: "서울시 강남구 논현로 168길 25, B/D Allthatart",
+    valueEn: "25, Nonhyeon-ro 168-gil, Gangnam-gu, Seoul, B/D Allthatart",
   },
-  { label: "전화", value: "02-3443-9894" },
-  { label: "팩스", value: "02-3443-6549" },
+  { label: "전화", labelEn: "Phone", value: "02-3443-9894", valueEn: "02-3443-9894" },
+  { label: "팩스", labelEn: "Fax", value: "02-3443-6549", valueEn: "02-3443-6549" },
   {
     label: "안내데스크",
+    labelEn: "Front Desk",
     value: "월~토 11:00 – 20:00 · 일요일 13:00 – 20:00",
+    valueEn: "Mon–Sat 11:00 AM – 8:00 PM · Sun 1:00 PM – 8:00 PM",
   },
   {
     label: "강의시간",
+    labelEn: "Class Hours",
     value: "방학중 09:30 – 22:00 · 학기중 13:00 – 21:00",
+    valueEn: "Vacation 9:30 AM – 10:00 PM · Term 1:00 PM – 9:00 PM",
   },
 ];
 
@@ -26,12 +33,11 @@ export default function LocationPage() {
         <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
           Location
         </p>
-        <div className="relative mt-4 max-w-2xl">
-          <BrushStroke className="absolute -left-3 top-2 h-12 w-64 opacity-90" />
-          <h1 className="relative font-serif text-4xl font-bold leading-tight text-brand-ink md:text-5xl">
-            오시는 길
-          </h1>
-        </div>
+        <h1
+          className={`${jejuGothic.className} mt-4 max-w-2xl text-4xl leading-[1.15] text-brand-ink md:text-6xl`}
+        >
+          <T ko="오시는 길" en="Location" />
+        </h1>
       
           </div>
       </section>
@@ -57,10 +63,10 @@ export default function LocationPage() {
               {INFO.map((item) => (
                 <div key={item.label} className="grid grid-cols-3 gap-4 py-4">
                   <dt className="text-sm font-medium text-brand-ink/50">
-                    {item.label}
+                    <T ko={item.label} en={item.labelEn} />
                   </dt>
                   <dd className="col-span-2 text-sm text-brand-ink">
-                    {item.value}
+                    <T ko={item.value} en={item.valueEn} />
                   </dd>
                 </div>
               ))}

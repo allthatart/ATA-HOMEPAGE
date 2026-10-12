@@ -4,19 +4,21 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/lib/i18n";
 
 const ITEMS = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "소개" },
-  { href: "/curriculum", label: "커리큘럼" },
-  { href: "/results", label: "합격결과" },
-  { href: "/blog", label: "콘텐츠" },
-  { href: "/consultation", label: "상담예약" },
-  { href: "/location", label: "오시는 길" },
+  { href: "/", label: "Home", labelEn: "Home" },
+  { href: "/about", label: "소개", labelEn: "About" },
+  { href: "/curriculum", label: "커리큘럼", labelEn: "Curriculum" },
+  { href: "/results", label: "합격결과", labelEn: "Results" },
+  { href: "/blog", label: "콘텐츠", labelEn: "Contents" },
+  { href: "/consultation", label: "상담예약", labelEn: "Consultation" },
+  { href: "/location", label: "오시는 길", labelEn: "Location" },
 ];
 
 export function SideMenu() {
   const [open, setOpen] = useState(false);
+  const { lang } = useLang();
 
   // 메뉴 열려있을 때 배경 스크롤 막기
   useEffect(() => {
@@ -97,7 +99,7 @@ export function SideMenu() {
                 )}
                 style={{ transitionDelay: open ? `${i * 40 + 100}ms` : "0ms" }}
               >
-                {item.label}
+                {lang === "en" ? item.labelEn : item.label}
               </Link>
             ))}
           </nav>

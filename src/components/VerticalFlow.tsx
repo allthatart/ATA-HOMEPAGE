@@ -1,6 +1,9 @@
-import { cn } from "@/lib/utils";
+"use client";
 
-type FlowNode = { title: string; desc: string };
+import { cn } from "@/lib/utils";
+import { useLang } from "@/lib/i18n";
+
+type FlowNode = { title: string; desc: string; descEn?: string };
 
 // 위에서 아래로 따뜻한 색(다홍 → 살구)이 이어지는 그라데이션
 const COLORS = [
@@ -68,6 +71,7 @@ function Bubble({
   color: string;
   align: "left" | "right" | "center";
 }) {
+  const { lang } = useLang();
   return (
     <div
       className={cn(
@@ -80,7 +84,7 @@ function Bubble({
         {step.title}
       </p>
       <p className="mt-1 text-xs leading-relaxed text-brand-ink/70">
-        {step.desc}
+        {lang === "en" ? step.descEn ?? step.desc : step.desc}
       </p>
     </div>
   );

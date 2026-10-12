@@ -1,41 +1,74 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLang } from "@/lib/i18n";
+import { imageAlt } from "@/lib/image-alts";
 
 const SLIDES = [
-  { seed: "allthatart-hero-1", alt: "학생 작업 공간" },
-  { seed: "allthatart-hero-2", alt: "포트폴리오 크리틱 수업" },
-  { seed: "allthatart-hero-3", alt: "학생 작품" },
-  { seed: "allthatart-hero-4", alt: "회화 실습 수업" },
-  { seed: "allthatart-hero-5", alt: "학원 내부 공간" },
+  { file: "hero-1.jpg", alt: "학생 작업 공간" },
+  { file: "hero-2.jpg", alt: "포트폴리오 크리틱 수업" },
+  { file: "hero-3.jpg", alt: "학생 작품" },
+  { file: "hero-4.jpg", alt: "회화 실습 수업" },
+  { file: "hero-5.jpg", alt: "학원 내부 공간" },
 ];
+
+// 마지막 -> 처음으로 자연스럽게 넘어가도록, 맨 뒤에 첫 슬라이드를 하나 더 붙여둠
+const TRACK_SLIDES = [...SLIDES, SLIDES[0]];
 
 const INTERVAL_MS = 4000;
 
 export function HeroSlider() {
   const [index, setIndex] = useState(0);
+  const [instant, setInstant] = useState(false);
+  const { lang } = useLang();
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setIndex((i) => (i + 1) % SLIDES.length);
+      setIndex((i) => i + 1);
     }, INTERVAL_MS);
     return () => clearInterval(timer);
   }, []);
+
+  // instant로 전환한 프레임이 화면에 그려지고 나면, 다음 전환을 위해 애니메이션을 다시 켠다
+  useEffect(() => {
+    if (!instant) return;
+    const raf = requestAnimationFrame(() => setInstant(false));
+    return () => cancelAnimationFrame(raf);
+  }, [instant]);
+
+  const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
+    if (e.propertyName !== "transform") return;
+    if (index === SLIDES.length) {
+      // 복제된 첫 슬라이드에 도착 -> 티 안 나게 진짜 첫 슬라이드로 순간 이동
+      setInstant(true);
+      setIndex(0);
+    }
+  };
+
+  const goTo = (i: number) => {
+    setInstant(false);
+    setIndex(i);
+  };
 
   return (
     <div className="relative w-full overflow-hidden bg-brand-ink">
       <div className="aspect-[80/21] w-full">
         <div
-          className="flex h-full transition-transform duration-700 ease-out"
+          className={`flex h-full ${instant ? "" : "transition-transform duration-700 ease-out"}`}
           style={{ transform: `translateX(-${index * 100}%)` }}
+          onTransitionEnd={handleTransitionEnd}
         >
-          {SLIDES.map((slide) => (
-            <div key={slide.seed} className="h-full w-full shrink-0">
+          {TRACK_SLIDES.map((slide, i) => (
+            <div key={i} className="h-full w-full shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={`https://picsum.photos/seed/${slide.seed}/1920/840`}
-                alt={slide.alt}
-                className="h-full w-full object-cover grayscale"
+                src={`/images/${slide.file}`}
+                alt={
+                  i === SLIDES.length
+                    ? ""
+                    : imageAlt(`/images/${slide.file}`, lang, slide.alt)
+                }
+                className="h-full w-full object-cover"
               />
             </div>
           ))}
@@ -46,11 +79,11 @@ export function HeroSlider() {
       <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-2">
         {SLIDES.map((slide, i) => (
           <button
-            key={slide.seed}
+            key={slide.file}
             aria-label={`${i + 1}번 슬라이드로 이동`}
-            onClick={() => setIndex(i)}
+            onClick={() => goTo(i)}
             className={`size-2 rounded-full transition-all ${
-              i === index ? "w-6 bg-brand-accent" : "bg-white/50"
+              i === index % SLIDES.length ? "w-6 bg-brand-accent" : "bg-white/50"
             }`}
           />
         ))}

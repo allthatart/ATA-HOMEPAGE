@@ -5,9 +5,33 @@ import Link from "next/link";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ANNOUNCEMENT } from "@/lib/announcement";
+import { useLang } from "@/lib/i18n";
+import { imageAlt } from "@/lib/image-alts";
+
+// 이미지가 여러 장이면 랜덤으로 한 장을 고릅니다. 바로 전에 보여준 이미지는 피합니다.
+function pickImage(images: string[]): string {
+  if (images.length === 0) return "";
+  if (images.length === 1) return images[0];
+
+  let last = "";
+  try {
+    last = localStorage.getItem("announcement-last-image") ?? "";
+  } catch {}
+
+  const candidates = images.filter((src) => src !== last);
+  const pool = candidates.length > 0 ? candidates : images;
+  const picked = pool[Math.floor(Math.random() * pool.length)];
+
+  try {
+    localStorage.setItem("announcement-last-image", picked);
+  } catch {}
+  return picked;
+}
 
 export function AnnouncementPopup() {
   const [open, setOpen] = useState(false);
+  const [image, setImage] = useState("");
+  const { lang } = useLang();
 
   useEffect(() => {
     if (!ANNOUNCEMENT.enabled) return;
@@ -16,7 +40,10 @@ export function AnnouncementPopup() {
     const dismissed = sessionStorage.getItem("announcement-dismissed");
     if (dismissed) return;
 
-    const timer = setTimeout(() => setOpen(true), 600);
+    const timer = setTimeout(() => {
+      setImage(pickImage(ANNOUNCEMENT.images));
+      setOpen(true);
+    }, 600);
     return () => clearTimeout(timer);
   }, []);
 
@@ -27,7 +54,8 @@ export function AnnouncementPopup() {
 
   if (!ANNOUNCEMENT.enabled || !open) return null;
 
-  const hasImage = ANNOUNCEMENT.image.trim().length > 0;
+  const hasImage = image.length > 0;
+  const imageAltText = imageAlt(image, lang, ANNOUNCEMENT.title);
 
   return (
     <div className="fixed inset-0 z-[9998] flex items-center justify-center px-5">
@@ -52,16 +80,16 @@ export function AnnouncementPopup() {
             <Link href={ANNOUNCEMENT.linkHref} onClick={close}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={ANNOUNCEMENT.image}
-                alt={ANNOUNCEMENT.title}
+                src={image}
+                alt={imageAltText}
                 className="block w-full"
               />
             </Link>
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={ANNOUNCEMENT.image}
-              alt={ANNOUNCEMENT.title}
+              src={image}
+              alt={imageAltText}
               className="block w-full"
             />
           )}

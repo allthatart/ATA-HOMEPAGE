@@ -1,11 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { BrushStroke } from "@/components/BrushStroke";
 import { Reveal } from "@/components/Reveal";
+import { jejuGothic } from "@/fonts";
+import { T } from "@/components/T";
 
 const ACHIEVEMENTS = [
-  { value: "6,619건", label: "총 132개 대학 합격승인 건수" },
-  { value: "79%", label: "장학생 합격 비율" },
-  { value: "$78,326,117", label: "누적 장학금 액수" },
+  { value: "6,619건", label: "총 132개 대학 합격승인 건수", labelEn: "admissions to 132 universities" },
+  { value: "79%", label: "장학생 합격 비율", labelEn: "scholarship acceptance rate" },
+  { value: "$78,326,117", label: "누적 장학금 액수", labelEn: "in cumulative scholarships" },
 ];
 
 const ACCEPTANCE_LIST = [
@@ -59,16 +60,25 @@ export default function ResultsPage() {
         <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
           Results
         </p>
-        <div className="relative mt-4 max-w-2xl">
-          <BrushStroke className="absolute -left-3 top-2 h-12 w-64 opacity-90" />
-          <h1 className="relative font-serif text-4xl font-bold leading-tight text-brand-ink md:text-5xl">
-            2026학년도 합격을
-            <br />
-            축하드립니다.
-          </h1>
-        </div>
+        <h1
+          className={`${jejuGothic.className} mt-4 max-w-2xl text-4xl leading-[1.15] text-brand-ink md:text-6xl`}
+        >
+          <T
+            ko={
+              <>
+                2026학년도 합격을
+                <br />
+                축하드립니다.
+              </>
+            }
+            en={<>Congratulations to our 2026 admits.</>}
+          />
+        </h1>
         <p className="mt-8 max-w-2xl leading-relaxed text-brand-ink/70">
-          추가 합격발표가 계속 이어지고 있습니다.
+          <T
+            ko="추가 합격발표가 계속 이어지고 있습니다."
+            en="More admission results are coming in."
+          />
         </p>
       
           </div>
@@ -84,7 +94,9 @@ export default function ResultsPage() {
                     <p className="font-serif text-3xl font-bold text-brand-accent">
                       {a.value}
                     </p>
-                    <p className="mt-2 text-sm text-brand-ink/60">{a.label}</p>
+                    <p className="mt-2 text-sm text-brand-ink/60">
+                      <T ko={a.label} en={a.labelEn} />
+                    </p>
                   </CardContent>
                 </Card>
               </Reveal>
@@ -96,20 +108,31 @@ export default function ResultsPage() {
       <section className="w-full px-5 md:px-50 py-20">
         <Reveal>
           <h2 className="font-serif text-2xl font-bold text-brand-ink md:text-3xl">
-            합격 명단
+            <T ko="합격 명단" en="Admission List" />
           </h2>
           <p className="mt-3 font-serif text-xl font-bold text-brand-accent">
-            합격을 축하합니다 🎉🎉🎉
+            <T
+              ko="합격을 축하합니다 🎉🎉🎉"
+              en="Congratulations! 🎉🎉🎉"
+            />
           </p>
 
           <div className="mx-auto mt-8 w-full overflow-x-auto rounded-lg ring-1 ring-brand-line md:w-1/2">
             <table className="w-full min-w-[560px] border-collapse text-sm">
               <thead>
                 <tr className="bg-brand-canvas text-left text-brand-ink/60">
-                  <th className="px-5 py-3 font-medium">이름</th>
-                  <th className="px-5 py-3 font-medium">대학교</th>
-                  <th className="px-5 py-3 font-medium">전공</th>
-                  <th className="px-5 py-3 font-medium">장학금</th>
+                  <th className="px-5 py-3 font-medium">
+                    <T ko="이름" en="Name" />
+                  </th>
+                  <th className="px-5 py-3 font-medium">
+                    <T ko="대학교" en="University" />
+                  </th>
+                  <th className="px-5 py-3 font-medium">
+                    <T ko="전공" en="Major" />
+                  </th>
+                  <th className="px-5 py-3 font-medium">
+                    <T ko="장학금" en="Scholarship" />
+                  </th>
                 </tr>
               </thead>
               <tbody>

@@ -1,20 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { BrushStroke } from "@/components/BrushStroke";
 import { Reveal } from "@/components/Reveal";
+import { jejuGothic } from "@/fonts";
+import { T } from "@/components/T";
 
 const STEPS = [
   {
     title: "예약 신청",
+    titleEn: "Request",
     desc: "아래 버튼으로 상담 신청서를 작성해 주세요.",
+    descEn: "Fill out the consultation form using the button below.",
   },
   {
     title: "일정 조율",
+    titleEn: "Scheduling",
     desc: "담당 선생님이 확인 후 유선으로 방문 일정을 안내드려요.",
+    descEn:
+      "A teacher will review it and call you to arrange a visit time.",
   },
   {
     title: "방문 상담",
+    titleEn: "In-Person Consultation",
     desc: "학생의 포트폴리오와 목표를 듣고 맞춤 커리큘럼을 제안해 드려요.",
+    descEn:
+      "We'll discuss the student's portfolio and goals and suggest a tailored curriculum.",
   },
 ];
 
@@ -26,17 +35,28 @@ export default function ConsultationPage() {
         <p className="text-sm font-semibold tracking-[0.2em] text-brand-accent-deep uppercase">
           Consultation
         </p>
-        <div className="relative mt-4 max-w-2xl">
-          <BrushStroke className="absolute -left-3 top-2 h-12 w-64 opacity-90" />
-          <h1 className="relative font-serif text-4xl font-bold leading-tight text-brand-ink md:text-5xl">
-            상담은 무료입니다.
-            <br />
-            편하게 문의해주세요.
-          </h1>
-        </div>
+        <h1
+          className={`${jejuGothic.className} mt-4 max-w-2xl text-4xl leading-[1.15] text-brand-ink md:text-6xl`}
+        >
+          <T
+            ko={
+              <>
+                상담은 무료입니다.
+                <br />
+                편하게 문의해주세요.
+              </>
+            }
+            en={<>Consultations are free. Feel free to reach out.</>}
+          />
+        </h1>
         <p className="mt-8 max-w-2xl leading-relaxed text-brand-ink/70">
-          희망 대학과 전공, 현재 포트폴리오 상태를 먼저 듣고, 세밀한
-          진학계획과 함께 맞춤 커리큘럼을 안내해 드립니다.
+          <T
+            ko="희망 대학과 전공, 현재 포트폴리오 상태를 먼저 듣고, 세밀한
+          진학계획과 함께 맞춤 커리큘럼을 안내해 드립니다."
+            en="We'll start by learning about your target university, major,
+          and current portfolio, then guide you through a detailed
+          admissions plan and a curriculum tailored to you."
+          />
         </p>
       
           </div>
@@ -52,10 +72,10 @@ export default function ConsultationPage() {
                 </span>
                 <div>
                   <p className="font-semibold text-brand-ink">
-                    {step.title}
+                    <T ko={step.title} en={step.titleEn} />
                   </p>
                   <p className="mt-1 text-sm text-brand-ink/60">
-                    {step.desc}
+                    <T ko={step.desc} en={step.descEn} />
                   </p>
                 </div>
               </Reveal>
@@ -66,24 +86,33 @@ export default function ConsultationPage() {
           <Card className="border-brand-line bg-brand-canvas">
             <CardContent className="text-center py-4">
               <p className="font-serif text-xl font-bold text-brand-ink">
-                지금 바로 상담을 예약하세요
+                <T ko="지금 바로 상담을 예약하세요" en="Book your consultation now" />
               </p>
               <p className="mt-2 text-sm text-brand-ink/60">
-                신청서 작성은 1분이면 충분해요.
+                <T
+                  ko="신청서 작성은 1분이면 충분해요."
+                  en="The form only takes about a minute."
+                />
               </p>
 
-              <Button size="lg" className="mt-6 w-full sm:w-auto" asChild>
+              <Button
+                size="lg"
+                className="mt-6 w-full rounded-full bg-[#f37520] hover:bg-brand-accent-deep sm:w-auto"
+                asChild
+              >
                 <a
                   href="https://docs.google.com/forms/d/e/1FAIpQLSejiDVG6zN3pnQQqneWR4lefiQqF7Lgaakys9fI6rRG0mARnw/viewform"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  상담 신청서 작성하기
+                  <T ko="상담 신청서 작성하기" en="Fill Out the Form" />
                 </a>
               </Button>
 
               <div className="mt-8 border-t border-brand-line pt-6 text-sm text-brand-ink/70">
-                <p>전화 상담도 가능합니다</p>
+                <p>
+                  <T ko="전화 상담도 가능합니다" en="Phone consultations are also available" />
+                </p>
                 <p className="mt-1 font-semibold text-brand-ink">
                   02-3443-9894
                 </p>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { jejuGothic } from "@/fonts";
+import { T } from "@/components/T";
 
 export function AboutHero() {
   const bgRef = useRef<HTMLDivElement>(null);
@@ -42,7 +44,7 @@ export function AboutHero() {
         <img
           src="/images/about-hero.jpg"
           alt="올댓아트 수업 공간"
-          className="h-full w-full object-cover grayscale"
+          className="h-full w-full object-cover"
         />
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/50" />
@@ -52,10 +54,25 @@ export function AboutHero() {
           <p className="text-sm font-semibold tracking-[0.25em] text-white/70 uppercase">
             About All That Art
           </p>
-          <h1 className="mt-5 font-serif text-5xl font-black leading-[1.05] text-white md:text-7xl">
-            예술은 자신만의 세계를
-            <br />
-            발견하는 것에서 시작됩니다.
+          <h1
+            className={`${jejuGothic.className} mt-5 text-4xl leading-[1.15] text-white md:text-6xl`}
+          >
+            <T
+              ko={
+                <>
+                  예술은 자신만의 세계를
+                  <br />
+                  발견하는 것에서 시작됩니다.
+                </>
+              }
+              en={
+                <>
+                  Art begins with discovering
+                  <br />
+                  a world of your own.
+                </>
+              }
+            />
           </h1>
         </div>
       </div>
