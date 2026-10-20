@@ -173,7 +173,7 @@
 }
 
 .student-marquee-track {
-  animation: student-marquee-scroll 176s linear infinite;
+  animation: student-marquee-scroll 172s linear infinite;
 }
 
 @media (hover: hover) {

@@ -3,13 +3,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Reveal } from "@/components/Reveal";
 import { jejuGothic } from "@/fonts";
 import { T } from "@/components/T";
+import { BookingForm } from "@/components/BookingForm";
+import { BOOKING_API_URL, FALLBACK_FORM_URL } from "@/lib/booking";
 
 const STEPS = [
   {
     title: "예약 신청",
     titleEn: "Request",
-    desc: "아래 버튼으로 상담 신청서를 작성해 주세요.",
-    descEn: "Fill out the consultation form using the button below.",
+    desc: "아래에서 날짜와 시간을 고르고 상담 신청서를 작성해 주세요.",
+    descEn: "Choose a date and time below and fill out the consultation form.",
   },
   {
     title: "일정 조율",
@@ -95,19 +97,25 @@ export default function ConsultationPage() {
                 />
               </p>
 
-              <Button
-                size="lg"
-                className="mt-6 w-full rounded-full bg-[#f37520] hover:bg-brand-accent-deep sm:w-auto"
-                asChild
-              >
-                <a
-                  href="https://docs.google.com/forms/d/e/1FAIpQLSejiDVG6zN3pnQQqneWR4lefiQqF7Lgaakys9fI6rRG0mARnw/viewform"
-                  target="_blank"
-                  rel="noreferrer"
+              {BOOKING_API_URL ? (
+                <div className="mt-6">
+                  <BookingForm apiUrl={BOOKING_API_URL} />
+                </div>
+              ) : (
+                <Button
+                  size="lg"
+                  className="mt-6 w-full rounded-full bg-[#f37520] hover:bg-brand-accent-deep sm:w-auto"
+                  asChild
                 >
-                  <T ko="상담 신청서 작성하기" en="Fill Out the Form" />
-                </a>
-              </Button>
+                  <a
+                    href={FALLBACK_FORM_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <T ko="상담 신청서 작성하기" en="Fill Out the Form" />
+                  </a>
+                </Button>
+              )}
 
               <div className="mt-8 border-t border-brand-line pt-6 text-sm text-brand-ink/70">
                 <p>

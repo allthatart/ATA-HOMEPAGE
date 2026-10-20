@@ -62,7 +62,6 @@ const ALTS: Record<string, [string, string]> = {
   "student-artwork-18.jpg": ["촛불과 바이올린을 그린 정물화", "Still life painting of a candle and a violin"],
   "student-artwork-19.jpg": ["인물 실루엣을 반짝이는 조각들로 채운 작품", "Human silhouette filled with glittering fragments"],
   "student-artwork-20.jpg": ["바다 속 물고기와 작은 배를 그린 수채 일러스트", "Watercolor illustration of fish beneath a small sailboat"],
-  "student-artwork-21.jpg": ["전봇대와 전선이 있는 골목 풍경을 그린 연필 드로잉", "Pencil drawing of an alley with a utility pole and wires"],
   "student-artwork-22.jpg": ["눈을 감은 얼굴 위로 검은 물방울이 떨어지는 혼합 매체 작품", "Mixed-media work of a closed-eyed face with black droplets"],
   "student-artwork-23.jpg": ["거친 붓 자국으로 그린 인물 상반신 추상 회화", "Expressive abstract painting of a bust figure"],
   "student-artwork-24.jpg": ["산수화 위에 빛나는 캡슐 오브제를 놓은 설치 작품", "Installation of a glowing capsule over a mountain landscape drawing"],

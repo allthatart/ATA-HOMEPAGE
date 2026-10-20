@@ -1,13 +1,29 @@
 import { Reveal } from "@/components/Reveal";
 import { jejuGothic } from "@/fonts";
 import { T } from "@/components/T";
+import { RouteMap } from "@/components/RouteMap";
 
-const INFO = [
+type InfoItem = {
+  label: string;
+  labelEn: string;
+  value: string;
+  valueEn: string;
+  note?: string;
+  noteEn?: string;
+};
+
+// 지도 아래 "길찾기 열기" 버튼: 구글 지도에서 같은 도보 길찾기를 엽니다.
+const DIRECTIONS_URL =
+  "https://www.google.com/maps/dir/?api=1&origin=%EC%95%95%EA%B5%AC%EC%A0%95%EC%97%AD%203%EB%B2%88%20%EC%B6%9C%EA%B5%AC&destination=%EC%84%9C%EC%9A%B8%ED%8A%B9%EB%B3%84%EC%8B%9C%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EB%85%BC%ED%98%84%EB%A1%9C168%EA%B8%B8%2025&travelmode=walking";
+
+const INFO: InfoItem[] = [
   {
     label: "주소",
     labelEn: "Address",
     value: "서울시 강남구 논현로 168길 25, B/D Allthatart",
     valueEn: "25, Nonhyeon-ro 168-gil, Gangnam-gu, Seoul, B/D Allthatart",
+    note: "압구정역 3번 출구에서 약 300m 거리",
+    noteEn: "About 300 m from Exit 3 of Apgujeong Station",
   },
   { label: "전화", labelEn: "Phone", value: "02-3443-9894", valueEn: "02-3443-9894" },
   { label: "팩스", labelEn: "Fax", value: "02-3443-6549", valueEn: "02-3443-6549" },
@@ -46,16 +62,7 @@ export default function LocationPage() {
         <div className="grid gap-10 md:grid-cols-2">
           {/* Google Maps */}
           <Reveal className="aspect-[4/3] overflow-hidden rounded-lg ring-1 ring-brand-line">
-            <iframe
-              src="https://www.google.com/maps?q=%EC%84%9C%EC%9A%B8%ED%8A%B9%EB%B3%84%EC%8B%9C%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EB%85%BC%ED%98%84%EB%A1%9C168%EA%B8%B8%2025&output=embed"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="올댓아트 오시는 길 지도"
-            />
+            <RouteMap className="h-full w-full" />
           </Reveal>
 
           <Reveal delay={150}>
@@ -67,10 +74,26 @@ export default function LocationPage() {
                   </dt>
                   <dd className="col-span-2 text-sm text-brand-ink">
                     <T ko={item.value} en={item.valueEn} />
+                    {item.note && (
+                      <p className="mt-1 break-keep text-brand-ink/60">
+                        <T ko={item.note} en={item.noteEn ?? item.note} />
+                      </p>
+                    )}
                   </dd>
                 </div>
               ))}
             </dl>
+            <a
+              href={DIRECTIONS_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-6 inline-flex items-center rounded-full bg-brand-ink px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-accent-deep"
+            >
+              <T
+                ko="압구정역 3번 출구 길찾기 열기"
+                en="Open walking directions from Exit 3"
+              />
+            </a>
           </Reveal>
         </div>
       </section>

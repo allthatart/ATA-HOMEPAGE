@@ -5,11 +5,15 @@ import { useLang } from "@/lib/i18n";
 import { imageAlt } from "@/lib/image-alts";
 
 const ARTWORK_COUNT = 44;
+// 사이트에서 뺀 작품 번호 (파일 번호는 그대로 두고 건너뜁니다)
+const REMOVED = [21];
 
-const ARTWORKS = Array.from({ length: ARTWORK_COUNT }, (_, i) => ({
-  src: `/images/student-artwork-${String(i + 1).padStart(2, "0")}.jpg`,
-  alt: `학생 작품 ${i + 1}`,
-}));
+const ARTWORKS = Array.from({ length: ARTWORK_COUNT }, (_, i) => i + 1)
+  .filter((n) => !REMOVED.includes(n))
+  .map((n) => ({
+    src: `/images/student-artwork-${String(n).padStart(2, "0")}.jpg`,
+    alt: `학생 작품 ${n}`,
+  }));
 
 // 띠 하나가 너무 길면 브라우저가 중간을 그리지 못해 빈 구간이 생기므로,
 // 같은 띠를 두 개 나란히 놓고 각각 자기 길이만큼만 이동시켜 이어붙입니다.
