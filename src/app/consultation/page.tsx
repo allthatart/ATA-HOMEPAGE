@@ -16,9 +16,9 @@ const STEPS = [
   {
     title: "일정 조율",
     titleEn: "Scheduling",
-    desc: "담당 선생님이 확인 후 유선으로 방문 일정을 안내드려요.",
+    desc: "담당 선생님이 확인한 뒤 확정 여부를 문자로 안내드려요. 확정 문자를 받으면 예약이 완료돼요.",
     descEn:
-      "A teacher will review it and call you to arrange a visit time.",
+      "A teacher will review your request and text you to confirm. Your booking is complete once you receive the confirmation.",
   },
   {
     title: "방문 상담",
@@ -88,7 +88,7 @@ export default function ConsultationPage() {
           <Card className="border-brand-line bg-brand-canvas">
             <CardContent className="text-center py-4">
               <p className="font-serif text-xl font-bold text-brand-ink">
-                <T ko="지금 바로 상담을 예약하세요" en="Book your consultation now" />
+                <T ko="지금 바로 상담을 신청하세요" en="Request your consultation now" />
               </p>
               <p className="mt-2 text-sm text-brand-ink/60">
                 <T

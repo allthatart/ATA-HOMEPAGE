@@ -4,7 +4,7 @@
  * 한 번에 해주는 일
  *   1) setupForm()  : 상담 예약 구글폼 + 응답 스프레드시트를 새로 만들고, 제출 시 문자가 나가도록 연결
  *   2) onFormSubmit : 폼이 제출될 때마다 신청자·담당자에게 문자 발송
- *   3) setupBooking / doGet / doPost : 사이트 예약 화면용. 같은 날짜·시간 중복 예약 방지 (아래 "사이트 상담 예약" 참고)
+ *   3) setupBooking / doGet / doPost : 사이트 예약 화면용. 중복 예약 방지 + 학원이 확정/거절 (아래 "사이트 상담 예약" 참고)
  *
  * 사용 위치: https://script.google.com → 새 프로젝트 (폼을 소유할 구글 계정으로 로그인)
  *
@@ -28,19 +28,25 @@
 // ── 문자 내용: 여기 문구만 고치면 됩니다 ─────────────────────────────
 var ACADEMY_NAME = '올댓아트';
 
+var ACADEMY_PHONE = '02-3443-9894';
+var ACADEMY_ADDRESS = '서울시 강남구 논현로168길 25 (압구정역 3번 출구에서 약 300m)';
+
+// 1) 신청 접수 (학원이 확인하기 전)
 function buildCustomerMessage_(f) {
   return [
-    '[' + ACADEMY_NAME + '] ' + f.name + '님, 상담 예약이 접수되었습니다.',
+    '[' + ACADEMY_NAME + '] ' + f.name + '님, 상담 신청이 접수되었습니다.',
     '',
     '- 희망 일시: ' + f.date + ' ' + f.time,
     '- 상담 유형: ' + f.type,
     '',
-    '확인 후 순차적으로 연락드리겠습니다. 감사합니다.',
+    '학원에서 확인 후 확정 여부를 문자로 안내드립니다.',
+    '(확정 문자를 받기 전에는 예약이 확정된 것이 아닙니다.)',
   ].join('\n');
 }
 
+// 2) 학원 담당자에게 가는 알림 (확인 링크 포함)
 function buildStaffMessage_(f) {
-  return [
+  var lines = [
     '[새 상담 신청]',
     '이름: ' + f.name,
     '연락처: ' + f.phone,
@@ -48,6 +54,33 @@ function buildStaffMessage_(f) {
     '상담 유형: ' + f.type,
     '희망 전공: ' + f.major,
     '문의: ' + f.memo,
+  ];
+  if (f.reviewUrl) {
+    lines.push('', '▶ 확정/거절하기', f.reviewUrl);
+  }
+  return lines.join('\n');
+}
+
+// 3) 학원이 확정했을 때 신청자에게
+function buildConfirmMessage_(f) {
+  return [
+    '[' + ACADEMY_NAME + '] ' + f.name + '님, 상담이 확정되었습니다.',
+    '',
+    '- 일시: ' + f.date + ' ' + f.time,
+    '- 장소: ' + ACADEMY_ADDRESS,
+    '- 문의: ' + ACADEMY_PHONE,
+    '',
+    '방문을 기다리겠습니다. 감사합니다.',
+  ].join('\n');
+}
+
+// 4) 학원이 거절했을 때 신청자에게
+function buildRejectMessage_(f) {
+  return [
+    '[' + ACADEMY_NAME + '] ' + f.name + '님, 요청하신 ' + f.date + ' ' + f.time + ' 상담은 일정상 진행이 어렵습니다.',
+    '',
+    '홈페이지에서 다른 날짜·시간으로 다시 신청하시거나 ' + ACADEMY_PHONE + '로 문의해 주세요.',
+    '죄송합니다.',
   ].join('\n');
 }
 
@@ -75,6 +108,27 @@ function notifyBooking_(f) {
   var failed = results.filter(function (r) { return r !== 'OK'; });
   if (failed.length) {
     notifyFailure_(f, failed);
+  }
+  return results;
+}
+
+// 문자 결과를 사람이 읽을 글로 바꿉니다. ('OK' → 성공, 그 밖에는 실패 이유)
+function smsText_(r) {
+  if (r === undefined) return '-';
+  return r === 'OK' ? '성공' : '실패 (' + r + ')';
+}
+
+// 예약 현황 시트의 "문자 결과" 칸에 발송 결과를 적어 둡니다. 실패해도 예약에는 영향이 없습니다.
+function logSmsResult_(row, text) {
+  try {
+    var stamp = Utilities.formatDate(new Date(), TZ, 'MM-dd HH:mm');
+    var cell = bookingSheet_().getRange(row, SMS_RESULT_COL);
+    var before = String(cell.getValue() || '').trim();
+    var line = stamp + ' ' + text;
+    // 이전 기록 뒤에 이어 붙입니다 (접수 → 확정/거절 → 다시 보내기 순서로 쌓임)
+    cell.setValue((before ? before + '\n' : '') + line);
+  } catch (err) {
+    Logger.log('문자 결과 기록 실패: ' + err);
   }
 }
 
@@ -160,40 +214,79 @@ function namedFromResponse_(response) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 사이트 상담 예약 (같은 날짜·시간 중복 예약 방지)
+// 사이트 상담 예약 (중복 방지 + 학원 확정/거절)
 //
 // 홈페이지의 예약 화면이 이 웹 앱에 요청을 보냅니다.
-//   - doGet  : 예약 가능한 날짜/시간과 이미 예약된 시간 목록을 돌려줌
-//   - doPost : 예약 접수. 같은 날짜·시간이 이미 있으면 거절(중복 방지)
+//   - 신청이 들어오면 상태 "대기"로 저장되고, 같은 날짜·시간은 다른 사람이 못 고릅니다.
+//   - 학원 담당자에게 문자가 가며, 문자 속 링크에서 [확정] 또는 [거절]을 누릅니다.
+//       확정 → 신청자에게 확정 문자 / 거절 → 신청자에게 거절 문자 + 그 시간이 다시 열림
+//   - 예약 현황 시트의 "상태" 칸(대기/확정/거절/취소)을 직접 바꿔도 같은 문자가 나갑니다.
 //
 // 처음 한 번: setupBooking() 실행 → 배포 → 새 배포 → 웹 앱
 //   (실행 사용자: 나 / 액세스 권한: 모든 사용자) → 웹 앱 URL을 홈페이지에 연결
+// 코드를 고친 뒤에는 setupBooking()을 다시 실행하고, 배포 → 배포 관리 → 새 버전으로 업데이트하세요.
 // ═══════════════════════════════════════════════════════════════════
 var TZ = 'Asia/Seoul';
 var TIME_SLOTS = ['15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00']; // 예약 가능한 시간
 var BOOKING_DAYS = 30;        // 오늘부터 며칠 뒤까지 예약을 받을지
 var CLOSED_WEEKDAYS = [];     // 예약을 받지 않는 요일 (0=일, 1=월 … 6=토). 예: [0] 이면 일요일 휴무
-var MAX_ACTIVE_PER_PHONE = 2; // 같은 번호로 동시에 가질 수 있는 예약 수
+var MAX_ACTIVE_PER_PHONE = 2; // 같은 번호로 동시에 가질 수 있는 예약 수 (대기·확정 합산)
 var BOOKING_HEADERS = ['접수시각', '예약일자', '예약시간', '이름', '전화번호', '최종학력',
-                       '희망전공', '희망대학', '알게된 경로', '상담유형', '추가 문의사항', '상태'];
+                       '희망전공', '희망대학', '알게된 경로', '상담유형', '추가 문의사항', '상태', '확인 ID', '문자 결과'];
+var STATUS_COL = 12;          // 시트에서 "상태"가 있는 열 (L)
+var SMS_RESULT_COL = 14;      // 문자 발송 결과를 적는 열 (N)
+var STATUS_PENDING = '대기';
+var STATUS_OK = '확정';
+var STATUS_NO = '거절';
+var STATUS_CANCEL = '취소';
 
-// 처음 한 번만 실행: 예약이 쌓이는 시트를 만듭니다.
+// 거절·취소된 시간은 다시 예약할 수 있습니다.
+function isFreeStatus_(s) { return s === STATUS_NO || s === STATUS_CANCEL; }
+// 학원이 아직 확인하지 않은 상태 ('접수'는 예전 이름)
+function isPending_(s) { return s === STATUS_PENDING || s === '접수'; }
+
+// 예약 시트를 만들고 설정합니다. 처음 한 번 실행하고, 코드를 고친 뒤에도 다시 실행해도 안전합니다.
 function setupBooking() {
   var props = PropertiesService.getScriptProperties();
-  if (props.getProperty('BOOKING_SHEET_ID')) {
-    Logger.log('이미 만들어져 있습니다. 예약 현황 시트: ' +
-      SpreadsheetApp.openById(props.getProperty('BOOKING_SHEET_ID')).getUrl());
-    return;
+  var ss, sh;
+  var id = props.getProperty('BOOKING_SHEET_ID');
+  if (id) {
+    ss = SpreadsheetApp.openById(id);
+    sh = ss.getSheetByName('예약');
+  } else {
+    ss = SpreadsheetApp.create('올댓아트 상담 예약 현황');
+    sh = ss.getSheets()[0];
+    sh.setName('예약');
+    props.setProperty('BOOKING_SHEET_ID', ss.getId());
   }
-  var ss = SpreadsheetApp.create('올댓아트 상담 예약 현황');
-  var sh = ss.getSheets()[0];
-  sh.setName('예약');
   sh.getRange(1, 1, sh.getMaxRows(), BOOKING_HEADERS.length).setNumberFormat('@'); // 날짜·번호가 변형되지 않게 글자로 저장
   sh.getRange(1, 1, 1, BOOKING_HEADERS.length).setValues([BOOKING_HEADERS]).setFontWeight('bold');
   sh.setFrozenRows(1);
-  props.setProperty('BOOKING_SHEET_ID', ss.getId());
+  sh.getRange(2, STATUS_COL, Math.max(sh.getMaxRows() - 1, 1), 1).setDataValidation(
+    SpreadsheetApp.newDataValidation()
+      .requireValueInList([STATUS_PENDING, STATUS_OK, STATUS_NO, STATUS_CANCEL], true)
+      .setAllowInvalid(false).build()
+  );
+
+  // 이미 숫자로 바뀌어 저장된 번호(앞의 0이 지워진 것)를 복구합니다.
+  var lastRow = sh.getLastRow();
+  if (lastRow >= 2) {
+    var phoneRange = sh.getRange(2, 5, lastRow - 1, 1);
+    var fixed = phoneRange.getValues().map(function (r) {
+      return [normalizePhone_(r[0]) || String(r[0] == null ? '' : r[0])];
+    });
+    phoneRange.setNumberFormat('@');
+    phoneRange.setValues(fixed);
+  }
+
+  // 시트의 "상태" 칸을 직접 바꿨을 때 신청자에게 문자가 가도록 연결 (한 번만 만듭니다)
+  var hasTrigger = ScriptApp.getProjectTriggers().some(function (t) {
+    return t.getHandlerFunction() === 'onBookingEdit';
+  });
+  if (!hasTrigger) ScriptApp.newTrigger('onBookingEdit').forSpreadsheet(ss).onEdit().create();
+
   Logger.log('예약 현황 시트: ' + ss.getUrl());
-  Logger.log('이제 배포 → 새 배포 → 웹 앱으로 배포하세요.');
+  Logger.log('이제 배포 → 새 배포(또는 배포 관리 → 새 버전) → 웹 앱으로 배포하세요.');
 }
 
 function bookingSheet_() {
@@ -220,28 +313,51 @@ function weekdayOf_(str) {
 
 // 시트 칸 값을 글자로 통일합니다. (직원이 직접 고쳐서 날짜/시간 형식으로 바뀐 경우 대비)
 function cellText_(v, fmt) {
-  if (v instanceof Date) return Utilities.formatDate(v, TZ, fmt);
+  if (v instanceof Date) return Utilities.formatDate(v, TZ, fmt || 'yyyy-MM-dd');
   return String(v == null ? '' : v).trim();
 }
 
-// 취소되지 않은 예약 목록
-function activeBookings_() {
+// 시트의 모든 예약을 읽습니다. (row = 시트의 줄 번호)
+function readRows_() {
   var sh = bookingSheet_();
   var last = sh.getLastRow();
   if (last < 2) return [];
   return sh.getRange(2, 1, last - 1, BOOKING_HEADERS.length).getValues()
-    .map(function (r) {
+    .map(function (r, i) {
       return {
+        row: i + 2,
         date: cellText_(r[1], 'yyyy-MM-dd'),
         time: cellText_(r[2], 'HH:mm'),
+        name: cellText_(r[3]),
         phone: normalizePhone_(r[4]),
-        status: cellText_(r[11], 'yyyy-MM-dd'),
+        edu: cellText_(r[5]),
+        major: cellText_(r[6]) || '-',
+        univ: cellText_(r[7]),
+        route: cellText_(r[8]),
+        type: cellText_(r[9]) || '-',
+        memo: cellText_(r[10]) || '-',
+        status: cellText_(r[11]),
+        id: cellText_(r[12]),
       };
     })
-    .filter(function (b) { return b.date && b.time && b.status !== '취소'; });
+    .filter(function (b) { return b.date && b.time; });
 }
 
-function doGet() {
+// 거절·취소되지 않은 예약 (= 시간을 차지하고 있는 예약)
+function activeBookings_() {
+  return readRows_().filter(function (b) { return !isFreeStatus_(b.status); });
+}
+
+function findById_(id) {
+  if (!/^[A-Za-z0-9]{16,64}$/.test(String(id || ''))) return null;
+  var rows = readRows_();
+  for (var i = 0; i < rows.length; i++) if (rows[i].id === id) return rows[i];
+  return null;
+}
+
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  if (p.action === 'review') return reviewPage_(p.id);
   try {
     var today = todayStr_();
     var booked = {};
@@ -260,6 +376,127 @@ function doGet() {
   } catch (err) {
     Logger.log('doGet 오류: ' + err);
     return json_({ ok: false, error: 'server' });
+  }
+}
+
+function esc_(v) {
+  return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// 담당자가 문자 속 링크를 열면 보이는 확인 화면 (확정 / 거절 버튼)
+function reviewPage_(id) {
+  var b = findById_(id);
+  var body;
+  if (!b) {
+    body = '<p>찾을 수 없는 요청입니다.</p>';
+  } else {
+    var rows = [
+      ['예약 일시', b.date + ' ' + b.time], ['이름', b.name], ['연락처', b.phone],
+      ['상담 유형', b.type], ['최종학력', b.edu], ['희망 전공', b.major],
+      ['희망 대학', b.univ || '-'], ['문의', b.memo],
+    ];
+    body = '<h2>상담 신청 확인</h2><table>' + rows.map(function (r) {
+      return '<tr><th>' + esc_(r[0]) + '</th><td>' + esc_(r[1]) + '</td></tr>';
+    }).join('') + '</table>';
+    if (isPending_(b.status)) {
+      body += '<div id="act"><button class="ok" onclick="go(\'ok\')">확정하기</button>' +
+        '<button class="no" onclick="go(\'no\')">거절하기</button></div>' +
+        '<p id="msg" class="msg"></p>' +
+        '<script>function go(d){var bs=document.querySelectorAll("button");' +
+        'for(var i=0;i<bs.length;i++)bs[i].disabled=true;' +
+        'google.script.run.withSuccessHandler(function(m){document.getElementById("msg").textContent=m;' +
+        'document.getElementById("act").style.display="none";})' +
+        '.withFailureHandler(function(e){document.getElementById("msg").textContent="오류: "+e.message;' +
+        'for(var i=0;i<bs.length;i++)bs[i].disabled=false;})' +
+        '.decideBooking(' + JSON.stringify(b.id) + ',d);}</script>';
+    } else {
+      body += '<p class="msg">이미 처리된 요청입니다. (현재 상태: <b>' + esc_(b.status) + '</b>)</p>';
+      if (b.status === STATUS_OK || b.status === STATUS_NO) {
+        body += '<div id="act"><button class="ok" style="width:100%" onclick="again()">' +
+          (b.status === STATUS_OK ? '확정' : '거절') + ' 문자 다시 보내기</button></div><p id="msg" class="msg"></p>' +
+          '<script>function again(){var bs=document.querySelectorAll("button");' +
+          'for(var i=0;i<bs.length;i++)bs[i].disabled=true;' +
+          'google.script.run.withSuccessHandler(function(m){document.getElementById("msg").textContent=m;' +
+          'for(var i=0;i<bs.length;i++)bs[i].disabled=false;})' +
+          '.withFailureHandler(function(e){document.getElementById("msg").textContent="오류: "+e.message;' +
+          'for(var i=0;i<bs.length;i++)bs[i].disabled=false;})' +
+          '.resendDecision(' + JSON.stringify(b.id) + ');}</script>';
+      }
+    }
+  }
+  var html = '<!doctype html><html><head><meta charset="utf-8"><style>' +
+    'body{font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#111}' +
+    'table{width:100%;border-collapse:collapse;margin:12px 0}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left;font-size:15px}' +
+    'th{width:92px;color:#666;font-weight:500}button{width:48%;padding:14px;font-size:16px;border:0;border-radius:8px;color:#fff}' +
+    '.ok{background:#f37520}.no{background:#555;float:right}.msg{margin-top:16px;font-size:16px}#act{overflow:hidden;margin-top:16px}' +
+    '</style></head><body>' + body + '</body></html>';
+  return HtmlService.createHtmlOutput(html).setTitle('상담 신청 확인')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+// 확인 화면의 버튼이 호출합니다. decision: 'ok'(확정) 또는 'no'(거절)
+function decideBooking(id, decision) {
+  if (decision !== 'ok' && decision !== 'no') return '잘못된 요청입니다.';
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  var b, status;
+  try {
+    b = findById_(id);
+    if (!b) return '찾을 수 없는 요청입니다.';
+    if (!isPending_(b.status)) return '이미 처리된 요청입니다. (현재 상태: ' + b.status + ')';
+    status = decision === 'ok' ? STATUS_OK : STATUS_NO;
+    bookingSheet_().getRange(b.row, STATUS_COL).setValue(status);
+    SpreadsheetApp.flush();
+  } finally {
+    lock.releaseLock();
+  }
+  var r = notifyDecision_(b, status);
+  var head = status === STATUS_OK ? '확정했습니다.' : '거절했습니다. (그 시간은 다시 열렸어요)';
+  if (r === 'OK') {
+    return head + ' 신청자에게 ' + (status === STATUS_OK ? '확정' : '안내') + ' 문자를 보냈어요.';
+  }
+  return head + ' 하지만 신청자에게 문자를 보내지 못했어요. 사유: ' + r +
+    ' — 신청자(' + b.phone + ')에게 직접 연락해 주세요. 원인을 해결한 뒤 이 링크에서 문자를 다시 보낼 수 있어요.';
+}
+
+// 이미 확정/거절한 신청의 결과 문자를 다시 보냅니다. (확인 화면의 [문자 다시 보내기] 버튼)
+function resendDecision(id) {
+  var b = findById_(id);
+  if (!b) return '찾을 수 없는 요청입니다.';
+  var status = b.status;
+  if (status !== STATUS_OK && status !== STATUS_NO) return '확정 또는 거절한 요청만 다시 보낼 수 있어요. (현재 상태: ' + b.status + ')';
+  var r = notifyDecision_(b, status);
+  return r === 'OK' ? '문자를 다시 보냈어요.' : '문자를 보내지 못했어요. 사유: ' + r;
+}
+
+// 확정/거절 결과를 신청자에게 문자로 알립니다.
+// 돌려주는 값: 'OK' 이거나 실패 이유 글. 결과는 시트의 "문자 결과" 칸에도 적습니다.
+function notifyDecision_(b, status) {
+  if (status !== STATUS_OK && status !== STATUS_NO) return 'skip';
+  var msg = status === STATUS_OK ? buildConfirmMessage_(b) : buildRejectMessage_(b);
+  var title = ACADEMY_NAME + (status === STATUS_OK ? ' 상담 확정' : ' 상담 안내');
+  var r = phoneOrEmpty_(b.phone) ? sendSms_(b.phone, msg, title) : '번호 오류: ' + b.phone;
+  if (r !== 'OK') notifyFailure_(b, [r]);
+  logSmsResult_(b.row, (status === STATUS_OK ? '확정' : '거절') + ' 문자 ' + smsText_(r));
+  return r;
+}
+
+function phoneOrEmpty_(p) { return normalizePhone_(p); }
+
+// 시트의 "상태" 칸을 직접 바꿨을 때 실행됩니다 (setupBooking이 연결해 둠).
+function onBookingEdit(e) {
+  try {
+    var r = e.range;
+    if (r.getSheet().getName() !== '예약' || r.getColumn() !== STATUS_COL ||
+        r.getNumRows() !== 1 || r.getRow() < 2) return;
+    var now = String(e.value || '').trim();
+    var old = String(e.oldValue || '').trim();
+    if (now === old || (now !== STATUS_OK && now !== STATUS_NO)) return;
+    var rows = readRows_().filter(function (x) { return x.row === r.getRow(); });
+    if (rows.length) notifyDecision_(rows[0], now);
+  } catch (err) {
+    Logger.log('onBookingEdit 오류: ' + err);
   }
 }
 
@@ -314,19 +551,29 @@ function doPost(e) {
     var mine = active.filter(function (b) { return b.phone === f.phone && b.date >= today; }).length;
     if (mine >= MAX_ACTIVE_PER_PHONE) return json_({ ok: false, error: 'too_many' });
 
-    bookingSheet_().appendRow([
+    var bookingId = Utilities.getUuid().replace(/-/g, '');
+    var sh = bookingSheet_();
+    var newRow = sh.getLastRow() + 1;
+    var rowRange = sh.getRange(newRow, 1, 1, BOOKING_HEADERS.length);
+    rowRange.setNumberFormat('@'); // 먼저 글자 형식으로 지정해야 번호 앞의 0이 지워지지 않습니다
+    rowRange.setValues([[
       Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm:ss'),
-      f.date, f.time, f.name, f.phone, f.edu, f.major, f.univ, f.route, f.type, f.memo, '접수',
-    ]);
+      f.date, f.time, f.name, f.phone, f.edu, f.major, f.univ, f.route, f.type, f.memo,
+      STATUS_PENDING, bookingId, '',
+    ]]);
     SpreadsheetApp.flush();
     lock.releaseLock();
     locked = false;
 
-    // 접수가 끝난 뒤 문자 발송 (문자가 실패해도 예약은 유지)
-    notifyBooking_({
+    // 접수가 끝난 뒤 문자 발송 (문자가 실패해도 접수는 유지)
+    var base = '';
+    try { base = ScriptApp.getService().getUrl(); } catch (err) { base = ''; }
+    var sent = notifyBooking_({
       name: f.name, phone: f.phone, date: f.date, time: f.time,
       type: f.type || '-', major: f.major || '-', memo: f.memo || '-',
+      reviewUrl: base ? base + '?action=review&id=' + bookingId : '',
     });
+    logSmsResult_(newRow, '접수 문자: 신청자 ' + smsText_(sent[0]) + ' / 담당자 ' + smsText_(sent[1]));
     return json_({ ok: true });
   } catch (err) {
     Logger.log('doPost 오류: ' + err);
@@ -334,6 +581,25 @@ function doPost(e) {
   } finally {
     if (locked) lock.releaseLock();
   }
+}
+
+// ── 솔라피 잔액 확인: 문자가 안 갈 때 먼저 실행해 보세요 ────────────────
+// 실행 로그에 남은 잔액(원)이 나옵니다. 문자 1통(장문)은 약 45원입니다.
+function checkSolapiBalance() {
+  var p = PropertiesService.getScriptProperties();
+  var apiKey = p.getProperty('SOLAPI_API_KEY');
+  var apiSecret = p.getProperty('SOLAPI_API_SECRET');
+  var date = new Date().toISOString();
+  var salt = Utilities.getUuid().replace(/-/g, '');
+  var signature = Utilities.computeHmacSha256Signature(date + salt, apiSecret).map(function (b) {
+    return ('0' + (b & 0xff).toString(16)).slice(-2);
+  }).join('');
+  var res = UrlFetchApp.fetch('https://api.solapi.com/cash/v1/balance', {
+    method: 'get',
+    headers: { Authorization: 'HMAC-SHA256 apiKey=' + apiKey + ', date=' + date + ', salt=' + salt + ', signature=' + signature },
+    muteHttpExceptions: true,
+  });
+  Logger.log('솔라피 응답(' + res.getResponseCode() + '): ' + res.getContentText());
 }
 
 // ── 설정 확인용: Apps Script 편집기에서 이 함수를 선택해 ▶ 실행 ────────
@@ -373,8 +639,10 @@ function readForm_(named) {
 
 // 010-1234-5678, +82 10 1234 5678 → 01012345678 (휴대폰 형식이 아니면 빈 값)
 function normalizePhone_(raw) {
-  var d = String(raw || '').replace(/[^0-9]/g, '');
+  var d = String(raw == null ? '' : raw).replace(/[^0-9]/g, '');
   if (d.indexOf('82') === 0) d = '0' + d.substring(2);
+  // 시트가 번호를 숫자로 바꾸면서 맨 앞의 0이 사라진 경우(1055556666)를 복구합니다.
+  if (/^1[016789][0-9]{7,8}$/.test(d)) d = '0' + d;
   return /^01[016789][0-9]{7,8}$/.test(d) ? d : '';
 }
 

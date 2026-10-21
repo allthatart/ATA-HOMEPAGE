@@ -57,7 +57,7 @@ const TEXT = {
     type: "상담유형",
     memo: "추가 문의사항",
     select: "선택",
-    submit: "상담 예약하기",
+    submit: "상담 신청하기",
     sending: "접수 중…",
     loading: "예약 가능한 시간을 불러오는 중…",
     loadFail: "예약 화면을 불러오지 못했어요. 잠시 후 다시 시도하거나 전화로 문의해 주세요.",
@@ -70,9 +70,10 @@ const TEXT = {
     past: "이미 지난 시간이에요. 다른 시간을 선택해 주세요.",
     invalid: "입력 내용을 다시 확인해 주세요.",
     fail: "접수 중 문제가 생겼어요. 잠시 후 다시 시도하거나 전화로 문의해 주세요.",
-    doneTitle: "상담 예약이 접수되었어요",
-    doneDesc: "입력하신 번호로 확인 문자가 발송됩니다. 확인 후 담당 선생님이 연락드릴게요.",
-    again: "다른 시간 예약하기",
+    doneTitle: "상담 신청이 접수되었어요",
+    doneDesc: "학원에서 확인 후 확정 여부를 문자로 안내드려요. 확정 문자를 받기 전에는 예약이 확정된 것이 아니에요.",
+    doneNote: "신청하신 시간은 확인이 끝날 때까지 다른 분이 선택할 수 없어요.",
+    again: "다른 시간 신청하기",
     phoneLabel: "전화 문의",
   },
   en: {
@@ -91,7 +92,7 @@ const TEXT = {
     type: "Consultation type",
     memo: "Additional questions",
     select: "Select",
-    submit: "Book consultation",
+    submit: "Request consultation",
     sending: "Submitting…",
     loading: "Loading available times…",
     loadFail: "Could not load the booking form. Please try again later or call us.",
@@ -104,9 +105,10 @@ const TEXT = {
     past: "That time has already passed. Please choose another one.",
     invalid: "Please check your input.",
     fail: "Something went wrong. Please try again later or call us.",
-    doneTitle: "Your consultation is booked",
-    doneDesc: "A confirmation text will be sent to your number. A teacher will contact you after reviewing.",
-    again: "Book another time",
+    doneTitle: "Your request has been received",
+    doneDesc: "We will review it and send you a text to confirm. Your booking is not confirmed until you receive that text.",
+    doneNote: "The time you requested is held for you until we finish reviewing.",
+    again: "Request another time",
     phoneLabel: "Call",
   },
 } as const;
@@ -289,6 +291,7 @@ export function BookingForm({ apiUrl }: { apiUrl: string }) {
           {date} {time}
         </p>
         <p className="mt-3 text-sm text-brand-ink/70">{t.doneDesc}</p>
+        <p className="mt-2 text-xs text-brand-ink/50">{t.doneNote}</p>
         <Button
           type="button"
           variant="outline"
