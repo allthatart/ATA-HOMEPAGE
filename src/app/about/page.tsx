@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Reveal } from "@/components/Reveal";
 import { AboutHero } from "@/components/AboutHero";
 import { ValueDiamond } from "@/components/ValueDiamond";
 import { StudentArtworkMarquee } from "@/components/StudentArtworkMarquee";
 import { T } from "@/components/T";
+
+export const metadata: Metadata = {
+  title: "소개",
+  description:
+    "올댓아트의 교육 철학과 학원 소개. 2009년 설립된 미술유학 전문 교육기관, 학생 포트폴리오와 작품을 소개합니다.",
+  alternates: { canonical: "/about" },
+};
 
 const HISTORY = [
   {

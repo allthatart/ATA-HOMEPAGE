@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { HeroSlider } from "@/components/HeroSlider";
@@ -8,6 +9,10 @@ import { SocialFloatingButtons } from "@/components/SocialFloatingButtons";
 import { getNaverBlogPosts } from "@/lib/naver-rss";
 import { gyeonGothic, jejuGothic, yoonGothic520 } from "@/fonts";
 import { T } from "@/components/T";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export const revalidate = 1800;
 

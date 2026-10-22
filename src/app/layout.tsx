@@ -7,10 +7,29 @@ import { StickyCTABar } from "@/components/StickyCTABar";
 import { Onboarding } from "@/components/Onboarding";
 import { AnnouncementPopup } from "@/components/AnnouncementPopup";
 import { LanguageProvider } from "@/lib/i18n";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "올댓아트 - 유학미술의 모든것",
-  description: "압구정 유학미술 전문 학원 올댓아트. 신입학·편입학·대학원 포트폴리오 준비.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "올댓아트 - 유학미술의 모든것",
+    template: "%s | 올댓아트",
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "ko_KR",
+    title: "올댓아트 - 유학미술의 모든것",
+    description: SITE_DESCRIPTION,
+    images: [{ url: "/images/about-preview_01.jpg", width: 1200, height: 630, alt: "올댓아트 교실" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "올댓아트 - 유학미술의 모든것",
+    description: SITE_DESCRIPTION,
+    images: ["/images/about-preview_01.jpg"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

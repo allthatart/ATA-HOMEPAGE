@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
 import { SubjectAccordion } from "@/components/SubjectAccordion";
 import { METHODOLOGY, SUBJECT_GROUPS } from "@/lib/curriculum-data";
 import { jejuGothic } from "@/fonts";
 import { T } from "@/components/T";
+
+export const metadata: Metadata = {
+  title: "커리큘럼",
+  description:
+    "신입학·편입학·대학원 미술유학 커리큘럼. 예비반, 특강반, 정규반으로 학생의 시작점에 맞춰 포트폴리오를 준비합니다.",
+  alternates: { canonical: "/curriculum" },
+};
 
 const QUICK_LINKS = [
   { href: "/curriculum/undergraduate/prep", ko: "예비반", en: "Prep", color: "#9EA0A2" },

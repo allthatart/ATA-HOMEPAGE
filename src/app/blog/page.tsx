@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Reveal } from "@/components/Reveal";
 import { ContentGrid, type ContentPost } from "@/components/ContentGrid";
 import { getNaverBlogPosts } from "@/lib/naver-rss";
@@ -6,6 +7,13 @@ import { jejuGothic } from "@/fonts";
 import { T } from "@/components/T";
 
 // 이 페이지는 매 요청 시 최신 RSS를 다시 확인합니다 (30분 캐시).
+export const metadata: Metadata = {
+  title: "콘텐츠",
+  description:
+    "올댓아트의 수업 이야기, 학생 작품, 입시 소식을 모았습니다.",
+  alternates: { canonical: "/blog" },
+};
+
 export const revalidate = 1800;
 
 // RSS를 가져오지 못했을 때(연동 전 시연 단계 등) 보여줄 예시 콘텐츠

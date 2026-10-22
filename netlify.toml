@@ -1,0 +1,7 @@
+# Netlify 배포 설정
+# Next.js 사이트는 Netlify가 자동으로 인식하므로 빌드 명령과 Node 버전만 지정합니다.
+[build]
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "22"

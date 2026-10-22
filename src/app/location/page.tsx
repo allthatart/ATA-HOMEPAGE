@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import { Reveal } from "@/components/Reveal";
 import { jejuGothic } from "@/fonts";
 import { T } from "@/components/T";
 import { RouteMap } from "@/components/RouteMap";
+
+export const metadata: Metadata = {
+  title: "오시는 길",
+  description:
+    "올댓아트 위치와 연락처. 서울시 강남구 논현로168길 25, 압구정역 3번 출구에서 약 300m.",
+  alternates: { canonical: "/location" },
+};
 
 type InfoItem = {
   label: string;

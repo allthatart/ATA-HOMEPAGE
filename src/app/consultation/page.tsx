@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Reveal } from "@/components/Reveal";
@@ -5,6 +6,13 @@ import { jejuGothic } from "@/fonts";
 import { T } from "@/components/T";
 import { BookingForm } from "@/components/BookingForm";
 import { BOOKING_API_URL, FALLBACK_FORM_URL } from "@/lib/booking";
+
+export const metadata: Metadata = {
+  title: "상담예약",
+  description:
+    "무료 입시 상담을 예약하세요. 희망 대학과 전공, 현재 포트폴리오 상태에 맞춘 진학 계획을 안내해 드립니다.",
+  alternates: { canonical: "/consultation" },
+};
 
 const STEPS = [
   {

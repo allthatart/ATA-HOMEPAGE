@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Reveal } from "@/components/Reveal";
 import { jejuGothic } from "@/fonts";
@@ -8,6 +9,13 @@ import {
   ADMISSIONS_UNIVERSITIES,
   ADMISSIONS_UPDATED_AT,
 } from "@/lib/admissions";
+
+export const metadata: Metadata = {
+  title: "합격결과",
+  description:
+    "2010-2026학년도 해외 명문 미술대학 합격 현황. 167개 대학, 6,800건 이상의 합격허가 기록.",
+  alternates: { canonical: "/results" },
+};
 
 const ACHIEVEMENTS = [
   {
