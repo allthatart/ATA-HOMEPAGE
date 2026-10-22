@@ -11,7 +11,10 @@ type Config = {
   now: string; // HH:mm (한국 시간)
   days: number;
   slots: string[];
+  // 학원이 시트의 [설정] 탭에서 정한 값. 없으면(예전 응답) 기본 시간(slots)을 씁니다.
+  slotsByWeekday?: Record<string, string[]>;
   closedWeekdays: number[];
+  closedDates?: string[];
   booked: Record<string, string[]>;
 };
 
@@ -174,10 +177,16 @@ export function BookingForm({ apiUrl }: { apiUrl: string }) {
     };
   }, [apiUrl, reloadKey]);
 
-  const closedDay = useMemo(
-    () => !!config && !!date && config.closedWeekdays.includes(weekdayOf(date)),
-    [config, date]
-  );
+  // 선택한 날짜에 예약할 수 있는 시간 목록 (휴무일이면 빈 목록)
+  const daySlots = useMemo(() => {
+    if (!config || !date) return [];
+    if (config.closedDates?.includes(date)) return [];
+    const wd = weekdayOf(date);
+    if (config.closedWeekdays.includes(wd)) return [];
+    return config.slotsByWeekday?.[String(wd)] ?? config.slots;
+  }, [config, date]);
+
+  const closedDay = !!config && !!date && daySlots.length === 0;
 
   const takenTimes = useMemo(
     () => new Set((config && date && config.booked[date]) || []),
@@ -335,9 +344,9 @@ export function BookingForm({ apiUrl }: { apiUrl: string }) {
         </span>
         {!date ? (
           <p className="text-sm text-brand-ink/50">{t.pickDate}</p>
-        ) : (
+        ) : closedDay ? null : (
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {config.slots.map((slot) => {
+            {daySlots.map((slot) => {
               const disabled = slotDisabled(slot);
               const full = takenTimes.has(slot);
               return (

@@ -53,8 +53,9 @@ function buildStaffMessage_(f) {
     '희망 일시: ' + f.date + ' ' + f.time,
     '상담 유형: ' + f.type,
     '희망 전공: ' + f.major,
-    '문의: ' + f.memo,
   ];
+  if (f.route) lines.push('알게된 경로: ' + f.route);
+  lines.push('문의: ' + f.memo);
   if (f.reviewUrl) {
     lines.push('', '▶ 확정/거절하기', f.reviewUrl);
   }
@@ -221,16 +222,22 @@ function namedFromResponse_(response) {
 //   - 학원 담당자에게 문자가 가며, 문자 속 링크에서 [확정] 또는 [거절]을 누릅니다.
 //       확정 → 신청자에게 확정 문자 / 거절 → 신청자에게 거절 문자 + 그 시간이 다시 열림
 //   - 예약 현황 시트의 "상태" 칸(대기/확정/거절/취소)을 직접 바꿔도 같은 문자가 나갑니다.
+//   - 예약 가능한 시간·휴무일·예약 기간은 같은 시트의 [설정] 탭에서 학원이 직접 고칩니다.
 //
 // 처음 한 번: setupBooking() 실행 → 배포 → 새 배포 → 웹 앱
 //   (실행 사용자: 나 / 액세스 권한: 모든 사용자) → 웹 앱 URL을 홈페이지에 연결
 // 코드를 고친 뒤에는 setupBooking()을 다시 실행하고, 배포 → 배포 관리 → 새 버전으로 업데이트하세요.
 // ═══════════════════════════════════════════════════════════════════
 var TZ = 'Asia/Seoul';
+// ※ 아래 네 값은 "처음 설정 시트를 만들 때의 기본값"입니다.
+//   운영 중에는 예약 현황 시트의 [설정] 탭에서 고치면 바로 홈페이지에 반영됩니다. (코드를 고칠 필요 없음)
 var TIME_SLOTS = ['15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00']; // 예약 가능한 시간
 var BOOKING_DAYS = 30;        // 오늘부터 며칠 뒤까지 예약을 받을지
 var CLOSED_WEEKDAYS = [];     // 예약을 받지 않는 요일 (0=일, 1=월 … 6=토). 예: [0] 이면 일요일 휴무
 var MAX_ACTIVE_PER_PHONE = 2; // 같은 번호로 동시에 가질 수 있는 예약 수 (대기·확정 합산)
+var SETTINGS_SHEET = '설정';
+var WEEKDAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
+var SETTINGS_WEEKDAY_ROW = 8; // 설정 탭에서 요일별 설정이 시작되는 줄 (일요일부터 7줄)
 var BOOKING_HEADERS = ['접수시각', '예약일자', '예약시간', '이름', '전화번호', '최종학력',
                        '희망전공', '희망대학', '알게된 경로', '상담유형', '추가 문의사항', '상태', '확인 ID', '문자 결과'];
 var STATUS_COL = 12;          // 시트에서 "상태"가 있는 열 (L)
@@ -244,6 +251,119 @@ var STATUS_CANCEL = '취소';
 function isFreeStatus_(s) { return s === STATUS_NO || s === STATUS_CANCEL; }
 // 학원이 아직 확인하지 않은 상태 ('접수'는 예전 이름)
 function isPending_(s) { return s === STATUS_PENDING || s === '접수'; }
+
+// ── 설정 탭: 학원에서 시트에서 직접 고치는 값들 ─────────────────────────
+function pad2_(n) { return (n < 10 ? '0' : '') + n; }
+
+// "15:00, 16:30 17시 18" 같은 글을 ['15:00','16:30','17:00','18:00']로 바꿉니다. (잘못된 글자는 무시)
+function parseTimes_(text) {
+  var out = [];
+  String(text == null ? '' : text).split(/[,\s、，;]+/).forEach(function (tok) {
+    var m = String(tok).trim().match(/^(\d{1,2})(?:[:시](\d{1,2}))?/);
+    if (!m) return;
+    var h = Number(m[1]), mi = m[2] ? Number(m[2]) : 0;
+    if (h > 23 || mi > 59) return;
+    var t = pad2_(h) + ':' + pad2_(mi);
+    if (out.indexOf(t) === -1) out.push(t);
+  });
+  return out.sort();
+}
+
+// "2026-12-25, 2027.1.1" 같은 글을 ['2026-12-25','2027-01-01']로 바꿉니다.
+function parseDates_(text) {
+  var out = [];
+  var re = /(\d{4})\D+(\d{1,2})\D+(\d{1,2})/g, m;
+  var src = String(text == null ? '' : text);
+  while ((m = re.exec(src)) !== null) {
+    var d = m[1] + '-' + pad2_(Number(m[2])) + '-' + pad2_(Number(m[3]));
+    if (out.indexOf(d) === -1) out.push(d);
+  }
+  return out.sort();
+}
+
+function settingsSheet_() {
+  var id = PropertiesService.getScriptProperties().getProperty('BOOKING_SHEET_ID');
+  return SpreadsheetApp.openById(id).getSheetByName(SETTINGS_SHEET);
+}
+
+// 설정 탭의 값을 읽습니다. 비었거나 잘못 적혀 있으면 기본값을 씁니다.
+function getSettings_() {
+  var st = {
+    slots: TIME_SLOTS.slice(),
+    days: BOOKING_DAYS,
+    maxPerPhone: MAX_ACTIVE_PER_PHONE,
+    closedDates: [],
+    closedWeekdays: CLOSED_WEEKDAYS.slice(),
+    slotsByWeekday: {},
+  };
+  try {
+    var sh = settingsSheet_();
+    if (!sh) return fillWeekdaySlots_(st);
+    var v = sh.getRange(2, 2, 4, 1).getValues(); // B2:B5
+    var times = parseTimes_(cellText_(v[0][0], 'HH:mm'));
+    if (times.length) st.slots = times;
+    var days = Number(cellText_(v[1][0]));
+    if (days >= 1 && days <= 365) st.days = Math.floor(days);
+    var mx = Number(cellText_(v[2][0]));
+    if (mx >= 1 && mx <= 20) st.maxPerPhone = Math.floor(mx);
+    st.closedDates = parseDates_(cellText_(v[3][0], 'yyyy-MM-dd'));
+
+    var w = sh.getRange(SETTINGS_WEEKDAY_ROW, 1, 7, 3).getValues(); // 일~토
+    st.closedWeekdays = [];
+    for (var i = 0; i < 7; i++) {
+      if (cellText_(w[i][1]) === '휴무') st.closedWeekdays.push(i);
+      var own = parseTimes_(cellText_(w[i][2], 'HH:mm'));
+      if (own.length) st.slotsByWeekday[i] = own;
+    }
+  } catch (err) {
+    Logger.log('설정 읽기 오류(기본값 사용): ' + err);
+  }
+  return fillWeekdaySlots_(st);
+}
+
+// 요일별 시간이 비어 있으면 기본 시간을 채웁니다.
+function fillWeekdaySlots_(st) {
+  for (var i = 0; i < 7; i++) {
+    if (!st.slotsByWeekday[i]) st.slotsByWeekday[i] = st.slots;
+  }
+  return st;
+}
+
+// 그 날짜에 예약할 수 있는 시간 목록 (휴무일이면 빈 목록)
+function slotsFor_(st, dateStr) {
+  if (st.closedDates.indexOf(dateStr) !== -1) return [];
+  var wd = weekdayOf_(dateStr);
+  if (st.closedWeekdays.indexOf(wd) !== -1) return [];
+  return st.slotsByWeekday[wd] || st.slots;
+}
+
+// 설정 탭이 없으면 기본값으로 만듭니다. (이미 있으면 학원이 적어 둔 값을 그대로 둡니다)
+function ensureSettingsSheet_(ss) {
+  var cfg = ss.getSheetByName(SETTINGS_SHEET);
+  if (cfg) return cfg;
+  cfg = ss.insertSheet(SETTINGS_SHEET);
+  cfg.getRange(1, 1, 14, 3).setNumberFormat('@');
+  var rows = [
+    ['항목', '값', '설명'],
+    ['예약 가능 시간', TIME_SLOTS.join(', '), '쉼표로 구분해서 적으세요. 예: 15:00, 15:30, 16:00 (30분 단위도 가능)'],
+    ['예약 가능 기간(일)', String(BOOKING_DAYS), '오늘부터 며칠 뒤까지 예약을 받을지 (숫자)'],
+    ['같은 번호 동시 예약 수', String(MAX_ACTIVE_PER_PHONE), '한 전화번호로 동시에 가질 수 있는 예약 수 (숫자)'],
+    ['휴무 날짜', '', '예약을 받지 않을 날짜. 쉼표로 구분. 예: 2026-12-25, 2027-01-01'],
+    ['', '', ''],
+    ['요일별 설정', '예약 여부', '시간 (비워 두면 위의 "예약 가능 시간"을 씁니다. 예: 13:00, 14:00, 15:00)'],
+  ];
+  cfg.getRange(1, 1, rows.length, 3).setValues(rows);
+  var wk = [];
+  for (var i = 0; i < 7; i++) wk.push([WEEKDAY_NAMES[i] + '요일', CLOSED_WEEKDAYS.indexOf(i) !== -1 ? '휴무' : '예약 받음', '']);
+  cfg.getRange(SETTINGS_WEEKDAY_ROW, 1, 7, 3).setValues(wk);
+  cfg.getRange(SETTINGS_WEEKDAY_ROW, 2, 7, 1).setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(['예약 받음', '휴무'], true).setAllowInvalid(false).build()
+  );
+  cfg.getRange(1, 1, 1, 3).setFontWeight('bold');
+  cfg.getRange(7, 1, 1, 3).setFontWeight('bold');
+  cfg.setColumnWidth(1, 170); cfg.setColumnWidth(2, 330); cfg.setColumnWidth(3, 520);
+  return cfg;
+}
 
 // 예약 시트를 만들고 설정합니다. 처음 한 번 실행하고, 코드를 고친 뒤에도 다시 실행해도 안전합니다.
 function setupBooking() {
@@ -267,6 +387,8 @@ function setupBooking() {
       .requireValueInList([STATUS_PENDING, STATUS_OK, STATUS_NO, STATUS_CANCEL], true)
       .setAllowInvalid(false).build()
   );
+
+  ensureSettingsSheet_(ss); // [설정] 탭 (시간·휴무일 등을 학원에서 직접 고치는 곳)
 
   // 이미 숫자로 바뀌어 저장된 번호(앞의 0이 지워진 것)를 복구합니다.
   var lastRow = sh.getLastRow();
@@ -364,13 +486,16 @@ function doGet(e) {
     activeBookings_().forEach(function (b) {
       if (b.date >= today) (booked[b.date] = booked[b.date] || []).push(b.time);
     });
+    var st = getSettings_();
     return json_({
       ok: true,
       today: today,
       now: Utilities.formatDate(new Date(), TZ, 'HH:mm'),
-      days: BOOKING_DAYS,
-      slots: TIME_SLOTS,
-      closedWeekdays: CLOSED_WEEKDAYS,
+      days: st.days,
+      slots: st.slots,
+      slotsByWeekday: st.slotsByWeekday,
+      closedWeekdays: st.closedWeekdays,
+      closedDates: st.closedDates,
       booked: booked,
     });
   } catch (err) {
@@ -393,7 +518,7 @@ function reviewPage_(id) {
   } else {
     var rows = [
       ['예약 일시', b.date + ' ' + b.time], ['이름', b.name], ['연락처', b.phone],
-      ['상담 유형', b.type], ['최종학력', b.edu], ['희망 전공', b.major],
+      ['상담 유형', b.type], ['최종학력', b.edu], ['알게된 경로', b.route || '-'], ['희망 전공', b.major],
       ['희망 대학', b.univ || '-'], ['문의', b.memo],
     ];
     body = '<h2>상담 신청 확인</h2><table>' + rows.map(function (r) {
@@ -505,7 +630,8 @@ function clean_(v, max) {
 }
 
 // 접수 내용을 검사해 정리합니다. 문제가 있으면 { error: '코드' }
-function cleanBooking_(d) {
+function cleanBooking_(d, st) {
+  st = st || getSettings_();
   var f = {
     name: clean_(d.name, 40),
     phone: normalizePhone_(d.phone),
@@ -522,9 +648,10 @@ function cleanBooking_(d) {
   if (!f.phone) return { error: 'invalid_phone' };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(f.date)) return { error: 'invalid_date' };
   var today = todayStr_();
-  if (f.date < today || f.date > addDaysStr_(today, BOOKING_DAYS)) return { error: 'invalid_date' };
-  if (CLOSED_WEEKDAYS.indexOf(weekdayOf_(f.date)) !== -1) return { error: 'invalid_date' };
-  if (TIME_SLOTS.indexOf(f.time) === -1) return { error: 'invalid_time' };
+  if (f.date < today || f.date > addDaysStr_(today, st.days)) return { error: 'invalid_date' };
+  var daySlots = slotsFor_(st, f.date);
+  if (!daySlots.length) return { error: 'invalid_date' }; // 휴무일
+  if (daySlots.indexOf(f.time) === -1) return { error: 'invalid_time' };
   if (f.date === today && f.time <= Utilities.formatDate(new Date(), TZ, 'HH:mm')) return { error: 'past' };
   if (!f.edu || !f.route) return { error: 'invalid' };
   return f;
@@ -536,7 +663,8 @@ function doPost(e) {
   try {
     var d = JSON.parse(e.postData.contents);
     if (d.website) return json_({ ok: true }); // 자동 입력 프로그램(스팸) 걸러내기
-    var f = cleanBooking_(d);
+    var st = getSettings_();
+    var f = cleanBooking_(d, st);
     if (f.error) return json_({ ok: false, error: f.error });
 
     // 동시에 두 사람이 접수해도 한 사람씩만 처리되도록 잠급니다.
@@ -549,7 +677,7 @@ function doPost(e) {
       return json_({ ok: false, error: 'slot_taken' });
     }
     var mine = active.filter(function (b) { return b.phone === f.phone && b.date >= today; }).length;
-    if (mine >= MAX_ACTIVE_PER_PHONE) return json_({ ok: false, error: 'too_many' });
+    if (mine >= st.maxPerPhone) return json_({ ok: false, error: 'too_many' });
 
     var bookingId = Utilities.getUuid().replace(/-/g, '');
     var sh = bookingSheet_();
@@ -570,7 +698,7 @@ function doPost(e) {
     try { base = ScriptApp.getService().getUrl(); } catch (err) { base = ''; }
     var sent = notifyBooking_({
       name: f.name, phone: f.phone, date: f.date, time: f.time,
-      type: f.type || '-', major: f.major || '-', memo: f.memo || '-',
+      type: f.type || '-', major: f.major || '-', memo: f.memo || '-', route: f.route,
       reviewUrl: base ? base + '?action=review&id=' + bookingId : '',
     });
     logSmsResult_(newRow, '접수 문자: 신청자 ' + smsText_(sent[0]) + ' / 담당자 ' + smsText_(sent[1]));
@@ -633,6 +761,7 @@ function readForm_(named) {
     time: pick_(named, '예약시간') || '',
     type: pick_(named, '상담유형') || '-',
     major: pick_(named, '희망전공') || '-',
+    route: pick_(named, '알게된 경로'),
     memo: pick_(named, '추가 문의') || '-',
   };
 }
