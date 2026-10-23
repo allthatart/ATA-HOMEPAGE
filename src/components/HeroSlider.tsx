@@ -16,6 +16,8 @@ const SLIDES = [
 const TRACK_SLIDES = [...SLIDES, SLIDES[0]];
 
 const INTERVAL_MS = 4000;
+const TRANSITION_MS = 700; // 아래 className의 duration-700 과 같은 값
+const LAST = SLIDES.length; // 맨 뒤에 붙여둔 복제 슬라이드의 위치
 
 export function HeroSlider() {
   const [index, setIndex] = useState(0);
@@ -24,9 +26,33 @@ export function HeroSlider() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setIndex((i) => i + 1);
+      // 복제 슬라이드(LAST)를 넘어서 계속 커지지 않게 막습니다.
+      // (다른 탭에 가 있는 동안에는 브라우저가 화면 전환을 멈춰서, 끝났다는 신호가 오지 않을 수 있습니다.
+      //  그때 번호만 계속 커지면 사진 줄을 벗어나 빈 화면이 됩니다.)
+      setIndex((i) => Math.min(i + 1, LAST));
     }, INTERVAL_MS);
     return () => clearInterval(timer);
+  }, []);
+
+  // 복제 슬라이드에 도착하면, "전환 끝" 신호를 기다리지 않고 타이머로도 첫 슬라이드로 되돌립니다.
+  useEffect(() => {
+    if (index !== LAST) return;
+    const t = setTimeout(() => {
+      setInstant(true);
+      setIndex(0);
+    }, TRANSITION_MS + 100);
+    return () => clearTimeout(t);
+  }, [index]);
+
+  // 다른 탭에 갔다가 돌아오면 위치를 바로잡습니다.
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState !== "visible") return;
+      setInstant(true);
+      setIndex((i) => (i >= LAST ? 0 : i));
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, []);
 
   // instant로 전환한 프레임이 화면에 그려지고 나면, 다음 전환을 위해 애니메이션을 다시 켠다
@@ -38,7 +64,7 @@ export function HeroSlider() {
 
   const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
     if (e.propertyName !== "transform") return;
-    if (index === SLIDES.length) {
+    if (index === LAST) {
       // 복제된 첫 슬라이드에 도착 -> 티 안 나게 진짜 첫 슬라이드로 순간 이동
       setInstant(true);
       setIndex(0);
