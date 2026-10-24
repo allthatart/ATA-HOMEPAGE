@@ -185,7 +185,7 @@ export function Header() {
           asChild
           size="lg"
           className={cn(
-            "hidden shrink-0 rounded-full bg-[#f37520] transition-colors duration-300 hover:bg-brand-accent-deep md:inline-flex md:h-11 md:px-8 md:text-base",
+            "hidden shrink-0 rounded-full bg-[#ff3319] transition-colors duration-300 hover:bg-brand-accent-deep md:inline-flex md:h-11 md:px-8 md:text-base",
             inverted &&
               "border border-white bg-transparent text-white hover:bg-white hover:text-brand-ink"
           )}

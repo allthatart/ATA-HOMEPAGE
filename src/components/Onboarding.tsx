@@ -40,7 +40,7 @@ export function Onboarding() {
   return (
     <div
       className={cn(
-        "fixed inset-0 z-[9999] flex items-center justify-center bg-[#f37520] transition-opacity duration-700 ease-out",
+        "fixed inset-0 z-[9999] flex items-center justify-center bg-[#ff3319] transition-opacity duration-700 ease-out",
         phase === "exit" ? "opacity-0 pointer-events-none" : "opacity-100"
       )}
       aria-hidden="true"

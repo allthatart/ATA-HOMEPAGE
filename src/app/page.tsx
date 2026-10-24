@@ -93,7 +93,7 @@ export default async function Home() {
         <div className="relative z-10 w-full px-5 pt-12 pb-14 md:px-10 md:pt-28 md:pb-32">
           <div className="mx-auto max-w-3xl">
             <p
-              className={`${gyeonGothic.className} text-sm tracking-[0.2em] text-[#f37520] uppercase`}
+              className={`${gyeonGothic.className} text-sm tracking-[0.2em] text-[#ff3319] uppercase`}
             >
               All That Art
             </p>
@@ -153,7 +153,7 @@ export default async function Home() {
               <Button
                 asChild
                 size="lg"
-                className="rounded-full bg-[#f37520] hover:bg-brand-accent-deep"
+                className="rounded-full bg-[#ff3319] hover:bg-brand-accent-deep"
               >
                 <Link href="/consultation">
                   <T ko="무료 상담 예약하기" en="Book a Free Consultation" />
@@ -274,7 +274,7 @@ export default async function Home() {
           <Button
             asChild
             size="lg"
-            className="rounded-full bg-[#f37520] text-white hover:bg-brand-accent-deep"
+            className="rounded-full bg-[#ff3319] text-white hover:bg-brand-accent-deep"
           >
             <Link href="/consultation">
               <T ko="상담예약 바로가기" en="Go to Consultation" />

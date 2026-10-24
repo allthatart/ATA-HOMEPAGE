@@ -112,7 +112,7 @@ export default function ConsultationPage() {
               ) : (
                 <Button
                   size="lg"
-                  className="mt-6 w-full rounded-full bg-[#f37520] hover:bg-brand-accent-deep sm:w-auto"
+                  className="mt-6 w-full rounded-full bg-[#ff3319] hover:bg-brand-accent-deep sm:w-auto"
                   asChild
                 >
                   <a

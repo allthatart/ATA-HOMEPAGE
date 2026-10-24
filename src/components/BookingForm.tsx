@@ -359,8 +359,8 @@ export function BookingForm({ apiUrl }: { apiUrl: string }) {
                   className={cn(
                     "h-10 rounded-md border text-sm transition-colors",
                     time === slot
-                      ? "border-[#f37520] bg-[#f37520] font-semibold text-white"
-                      : "border-brand-line bg-brand-paper text-brand-ink hover:border-[#f37520]",
+                      ? "border-[#ff3319] bg-[#ff3319] font-semibold text-white"
+                      : "border-brand-line bg-brand-paper text-brand-ink hover:border-[#ff3319]",
                     disabled &&
                       "cursor-not-allowed border-brand-line bg-brand-canvas text-brand-ink/30 hover:border-brand-line"
                   )}
@@ -487,7 +487,7 @@ export function BookingForm({ apiUrl }: { apiUrl: string }) {
                 value={ko}
                 checked={form.type === ko}
                 onChange={() => update("type", ko)}
-                className="size-4 accent-[#f37520]"
+                className="size-4 accent-[#ff3319]"
               />
               {en ? enLabel : ko}
             </label>
@@ -534,7 +534,7 @@ export function BookingForm({ apiUrl }: { apiUrl: string }) {
         type="submit"
         size="lg"
         disabled={status === "sending"}
-        className="w-full rounded-full bg-[#f37520] hover:bg-brand-accent-deep"
+        className="w-full rounded-full bg-[#ff3319] hover:bg-brand-accent-deep"
       >
         {status === "sending" ? t.sending : t.submit}
       </Button>

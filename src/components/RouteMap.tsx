@@ -21,7 +21,7 @@ const ROUTE: [number, number][] = [
   [37.523723, 127.030282],
 ];
 
-const ACCENT = "#f37520";
+const ACCENT = "#ff3319";
 
 function dot(color: string) {
   return `<span style="display:block;width:16px;height:16px;border-radius:9999px;background:${color};border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45)"></span>`;
