@@ -4,7 +4,6 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SideMenu } from "@/components/SideMenu";
 import { StickyCTABar } from "@/components/StickyCTABar";
-import { Onboarding } from "@/components/Onboarding";
 import { AnnouncementPopup } from "@/components/AnnouncementPopup";
 import { LanguageProvider } from "@/lib/i18n";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/site";
@@ -49,7 +48,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full flex flex-col bg-brand-paper text-brand-ink font-sans">
         <LanguageProvider>
-          <Onboarding />
           <AnnouncementPopup />
           <Header />
           <StickyCTABar />
