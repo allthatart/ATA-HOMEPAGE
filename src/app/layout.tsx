@@ -15,6 +15,11 @@ export const metadata: Metadata = {
     template: "%s | 올댓아트",
   },
   description: SITE_DESCRIPTION,
+  verification: {
+    other: {
+      "naver-site-verification": "16e1d4b86b3db5d8890c78fa0945d58b9d48cd13",
+    },
+  },
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
