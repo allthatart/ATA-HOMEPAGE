@@ -56,7 +56,8 @@ const SOCIAL_LINKS = [
 
 export function SocialFloatingButtons() {
   return (
-    <div className="fixed bottom-6 right-5 z-30 flex flex-col items-end gap-3 md:bottom-8 md:right-8">
+    // 하단 우측에 Netlify 배지("Powered by Netlify")가 뜨므로, 가려지지 않게 그 위로 띄운다.
+    <div className="fixed bottom-[4.5rem] right-5 z-30 flex flex-col items-end gap-3 md:bottom-[5rem] md:right-8">
       <KakaoChatButton />
       {SOCIAL_LINKS.map(({ href, label, Icon }) => (
         <Link
