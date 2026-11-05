@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { CURRICULUM_TRACKS, getSub } from "@/lib/curriculum-data";
 import { T } from "@/components/T";
-import { ClassLanding, HERO_BG } from "@/components/ClassLanding";
+import { ClassLanding, HERO_BG, HERO_BG_MOBILE } from "@/components/ClassLanding";
 
 export function generateStaticParams() {
   return CURRICULUM_TRACKS.flatMap((t) =>
@@ -42,9 +42,11 @@ export default async function CurriculumSubDetailPage({
             flowCenterLabelEn: sub.flowCenterLabelEn ?? track.flowCenterLabelEn,
           }}
           heroBg={HERO_BG[bgKey] ?? "/images/track-hero-texture.jpg"}
+          heroBgMobile={HERO_BG_MOBILE[bgKey]}
           // 세로로 긴 모바일 화면에서도 색이 보이도록 예비반·특강반 배경은 오른쪽(색이 진한 쪽)을 보여줍니다.
+          // (예비반은 휴대폰 전용 세로 배경을 따로 써서 가운데 기준으로 보여줍니다.)
           heroBgClass={
-            sub.slug === "prep" || sub.slug === "intensive"
+            sub.slug === "intensive"
               ? "object-[70%_center] md:object-center"
               : "object-center"
           }

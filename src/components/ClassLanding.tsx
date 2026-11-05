@@ -13,16 +13,23 @@ export const HERO_BG: Record<string, string> = {
   intensive: "/images/track-hero-intensive.jpg",
 };
 
+// 세로로 긴 휴대폰 화면 전용 배경(없으면 위 배경을 그대로 씁니다).
+export const HERO_BG_MOBILE: Record<string, string> = {
+  prep: "/images/track-hero-prep-m.jpg",
+};
+
 // 반(예: 예비반) 전용 소개: 맨 위 제목/설명 + 4단계 도식 + "해볼 수 있는 것들" 카드
 export function ClassLanding({
   sub,
   heroBg,
+  heroBgMobile,
   heroBgClass = "object-center",
   heroDesc,
   heroDescEn,
 }: {
   sub: CurriculumSub;
   heroBg: string;
+  heroBgMobile?: string;
   heroBgClass?: string;
   heroDesc: string;
   heroDescEn?: string;
@@ -30,12 +37,17 @@ export function ClassLanding({
   return (
     <>
       <section className="relative w-full overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={heroBg}
-          alt=""
-          className={`absolute inset-0 h-full w-full object-cover ${heroBgClass}`}
-        />
+        <picture>
+          {heroBgMobile && (
+            <source media="(max-width: 767px)" srcSet={heroBgMobile} />
+          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={heroBg}
+            alt=""
+            className={`absolute inset-0 h-full w-full object-cover ${heroBgClass}`}
+          />
+        </picture>
 
         <div className="relative z-10 px-5 py-14 md:px-10 md:py-32">
           <Reveal className="mx-auto max-w-3xl text-center">
