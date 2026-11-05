@@ -6,7 +6,7 @@ import { SideMenu } from "@/components/SideMenu";
 import { StickyCTABar } from "@/components/StickyCTABar";
 import { AnnouncementPopup } from "@/components/AnnouncementPopup";
 import { LanguageProvider } from "@/lib/i18n";
-import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/site";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, BUSINESS } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -36,6 +36,24 @@ export const metadata: Metadata = {
   },
 };
 
+const businessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  name: BUSINESS.name,
+  alternateName: ["올댓아트", "ALL THAT ART"],
+  url: SITE_URL,
+  description: SITE_DESCRIPTION,
+  telephone: BUSINESS.telephone,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: BUSINESS.streetAddress,
+    addressLocality: BUSINESS.locality,
+    addressRegion: BUSINESS.region,
+    addressCountry: BUSINESS.country,
+  },
+  sameAs: BUSINESS.sameAs,
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" className="h-full antialiased">
@@ -52,6 +70,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-full flex flex-col bg-brand-paper text-brand-ink font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(businessJsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
         <LanguageProvider>
           <AnnouncementPopup />
           <Header />
