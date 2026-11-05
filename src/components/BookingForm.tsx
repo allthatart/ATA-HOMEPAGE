@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLang } from "@/lib/i18n";
+import { trackBookingSubmitted } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 type Config = {
@@ -232,6 +233,7 @@ export function BookingForm({ apiUrl }: { apiUrl: string }) {
       });
       const data = await res.json();
       if (data.ok) {
+        trackBookingSubmitted();
         setStatus("done");
         return;
       }

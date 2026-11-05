@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { SideMenu } from "@/components/SideMenu";
 import { StickyCTABar } from "@/components/StickyCTABar";
 import { AnnouncementPopup } from "@/components/AnnouncementPopup";
+import { Analytics } from "@/components/Analytics";
 import { LanguageProvider } from "@/lib/i18n";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, BUSINESS } from "@/lib/site";
 
@@ -76,6 +77,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             __html: JSON.stringify(businessJsonLd).replace(/</g, "\\u003c"),
           }}
         />
+        <Analytics />
         <LanguageProvider>
           <AnnouncementPopup />
           <Header />
