@@ -5,7 +5,7 @@
 // - 구글 애널리틱스(GA4) 측정 ID: "G-" 로 시작 (예: G-ABCDE12345)
 // - 네이버 애널리틱스 사이트 ID: wcs_add["wa"] = "..." 에 들어 있는 값
 export const GA_MEASUREMENT_ID: string = "G-4B6233C0Z3";
-export const NAVER_ANALYTICS_ID: string = "";
+export const NAVER_ANALYTICS_ID: string = "2c7b8824ea7a6a";
 
 // 개발 중(localhost)에는 통계가 섞이지 않도록 실제 배포에서만 켭니다.
 export const ANALYTICS_ENABLED = process.env.NODE_ENV === "production";
