@@ -42,7 +42,7 @@ gtag('config', '${GA_MEASUREMENT_ID}');`}
       )}
       {NAVER_ANALYTICS_ID && (
         <>
-          <Script src="https://wcs.naver.net/wcslog.js" strategy="afterInteractive" />
+          <Script src="https://wcs.pstatic.net/wcslog.js" strategy="afterInteractive" />
           <Script id="naver-analytics-init" strategy="afterInteractive">
             {`if(!window.wcs_add) window.wcs_add = {};
 window.wcs_add["wa"] = "${NAVER_ANALYTICS_ID}";
