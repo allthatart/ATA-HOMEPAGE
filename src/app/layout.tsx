@@ -7,12 +7,12 @@ import { StickyCTABar } from "@/components/StickyCTABar";
 import { AnnouncementPopup } from "@/components/AnnouncementPopup";
 import { Analytics } from "@/components/Analytics";
 import { LanguageProvider } from "@/lib/i18n";
-import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, BUSINESS } from "@/lib/site";
+import { SITE_URL, SITE_NAME, SITE_TITLE, SITE_DESCRIPTION, BUSINESS } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "올댓아트 - 유학미술의 모든것",
+    default: SITE_TITLE,
     template: "%s | 올댓아트",
   },
   description: SITE_DESCRIPTION,
@@ -25,13 +25,13 @@ export const metadata: Metadata = {
     type: "website",
     siteName: SITE_NAME,
     locale: "ko_KR",
-    title: "올댓아트 - 유학미술의 모든것",
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     images: [{ url: "/images/about-preview_01.jpg", width: 1200, height: 630, alt: "올댓아트 교실" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "올댓아트 - 유학미술의 모든것",
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     images: ["/images/about-preview_01.jpg"],
   },

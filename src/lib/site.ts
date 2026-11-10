@@ -1,3 +1,5 @@
+import { ADMISSIONS_TOTAL, ADMISSIONS_UNIVERSITIES } from "@/lib/admissions";
+
 // 사이트의 정식 주소. 검색엔진 안내(사이트맵, robots)와 공유 미리보기(OG)에서 씁니다.
 // 도메인을 바꾸면 이 한 줄만 고치면 됩니다.
 export const SITE_URL = "https://allthatart.co.kr";
@@ -19,5 +21,9 @@ export const BUSINESS = {
     "https://www.youtube.com/channel/UC7ryDQMngDpL1OF-9P9Vojw",
   ],
 };
-export const SITE_DESCRIPTION =
-  "압구정 유학미술 전문 학원 올댓아트. 신입학·편입학·대학원 포트폴리오 준비.";
+// 검색 결과와 카카오톡·SNS 공유 미리보기에 나오는 제목·설명입니다. (대표 페이지 기준)
+export const SITE_TITLE = "올댓아트 | 압구정 유학미술학원, 해외 미대 포트폴리오";
+
+// 합격 건수는 합격결과 페이지의 데이터와 같은 값을 써서 항상 일치하게 합니다. (100건 단위로 내림)
+const ADMISSIONS_FLOOR = Math.floor(ADMISSIONS_TOTAL / 100) * 100;
+export const SITE_DESCRIPTION = `2009년 설립, 압구정 유학미술 전문 올댓아트. 해외 미술대학 신입학·편입학·대학원 포트폴리오 준비, ${ADMISSIONS_UNIVERSITIES}개 대학 ${ADMISSIONS_FLOOR.toLocaleString("ko-KR")}건 이상의 합격허가 실적. 무료 상담 예약.`;
