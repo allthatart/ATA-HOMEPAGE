@@ -132,6 +132,17 @@ export default function ConsultationPage() {
                 <p className="mt-1 font-semibold text-brand-ink">
                   02-3443-9894
                 </p>
+                <p className="mt-4 text-xs leading-relaxed text-brand-ink/60">
+                  <T
+                    ko="예약 변경·취소는 전화로 문의해 주세요."
+                    en="To change or cancel a booking, please call us."
+                  />
+                  <br />
+                  <T
+                    ko="안내데스크 운영: 월~토 11:00–20:00 · 일요일 13:00–20:00"
+                    en="Front desk: Mon–Sat 11:00 AM–8:00 PM · Sun 1:00 PM–8:00 PM"
+                  />
+                </p>
               </div>
             </CardContent>
           </Card>
