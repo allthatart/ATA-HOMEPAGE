@@ -5,6 +5,7 @@ import { AboutHero } from "@/components/AboutHero";
 import { ValueDiamond } from "@/components/ValueDiamond";
 import { StudentArtworkMarquee } from "@/components/StudentArtworkMarquee";
 import { T } from "@/components/T";
+import { ADMISSIONS_TOTAL, ADMISSIONS_UNIVERSITIES } from "@/lib/admissions";
 
 export const metadata: Metadata = {
   title: "소개",
@@ -33,7 +34,12 @@ const HISTORY = [
 ];
 
 const ACHIEVEMENTS = [
-  { value: "6,619건", label: "총 132개 대학 합격승인 건수", labelEn: "admissions to 132 universities" },
+  // 합격결과 페이지와 같은 데이터(admissions.ts)를 씁니다.
+  {
+    value: `${ADMISSIONS_TOTAL.toLocaleString("ko-KR")}건`,
+    label: `총 ${ADMISSIONS_UNIVERSITIES}개 대학 합격승인 건수`,
+    labelEn: `admissions to ${ADMISSIONS_UNIVERSITIES} universities`,
+  },
   { value: "79%", label: "장학생 합격 비율", labelEn: "scholarship acceptance rate" },
   { value: "$78,326,117", label: "누적 장학금 액수", labelEn: "in cumulative scholarships" },
 ];

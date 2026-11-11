@@ -9,6 +9,7 @@ import { SocialFloatingButtons } from "@/components/SocialFloatingButtons";
 import { getNaverBlogPosts } from "@/lib/naver-rss";
 import { gyeonGothic, jejuGothic, yoonGothic520 } from "@/fonts";
 import { T } from "@/components/T";
+import { ADMISSIONS_TOTAL, ADMISSIONS_UNIVERSITIES } from "@/lib/admissions";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -66,7 +67,12 @@ const CURRICULUM_PREVIEW = [
 ];
 
 const STATS = [
-  { value: "6,619", label: "건 · 총 132개 대학 합격승인", labelEn: "admissions · 132 universities" },
+  // 합격 건수·대학 수는 합격결과 페이지와 같은 데이터(admissions.ts)를 써서 항상 일치합니다.
+  {
+    value: ADMISSIONS_TOTAL.toLocaleString("ko-KR"),
+    label: `건 · 총 ${ADMISSIONS_UNIVERSITIES}개 대학 합격승인`,
+    labelEn: `admissions · ${ADMISSIONS_UNIVERSITIES} universities`,
+  },
   { value: "79%", label: "장학생 합격 비율", labelEn: "scholarship acceptance rate" },
   { value: "$78.3M+", label: "누적 장학금 획득 금액", labelEn: "in scholarships awarded" },
   { value: "2006~", label: "올댓아트 유학미술 역사", labelEn: "All That Art's history" },
