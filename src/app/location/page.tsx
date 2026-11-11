@@ -38,14 +38,14 @@ const INFO: InfoItem[] = [
   {
     label: "안내데스크",
     labelEn: "Front Desk",
-    value: "월~토 11:00 – 20:00 · 일요일 13:00 – 20:00",
-    valueEn: "Mon–Sat 11:00 AM – 8:00 PM · Sun 1:00 PM – 8:00 PM",
+    value: "월~금 11:00 – 20:00 · 토·일 13:00 – 20:00",
+    valueEn: "Mon–Fri 11:00 AM – 8:00 PM · Sat–Sun 1:00 PM – 8:00 PM",
   },
   {
     label: "강의시간",
     labelEn: "Class Hours",
-    value: "방학중 09:30 – 22:00 · 학기중 13:00 – 21:00",
-    valueEn: "Vacation 9:30 AM – 10:00 PM · Term 1:00 PM – 9:00 PM",
+    value: "방학 중 09:30 – 21:00 · 학기 중 13:00 – 21:00",
+    valueEn: "Vacation 9:30 AM – 9:00 PM · Term 1:00 PM – 9:00 PM",
   },
 ];
 

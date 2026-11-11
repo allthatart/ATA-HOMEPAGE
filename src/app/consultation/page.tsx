@@ -139,8 +139,8 @@ export default function ConsultationPage() {
                   />
                   <br />
                   <T
-                    ko="안내데스크 운영: 월~토 11:00–20:00 · 일요일 13:00–20:00"
-                    en="Front desk: Mon–Sat 11:00 AM–8:00 PM · Sun 1:00 PM–8:00 PM"
+                    ko="안내데스크 운영: 월~금 11:00–20:00 · 토·일 13:00–20:00"
+                    en="Front desk: Mon–Fri 11:00 AM–8:00 PM · Sat–Sun 1:00 PM–8:00 PM"
                   />
                 </p>
               </div>
